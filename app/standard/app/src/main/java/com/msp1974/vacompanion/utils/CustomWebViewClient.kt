@@ -1,0 +1,253 @@
+package com.msp1974.vacompanion.utils
+
+import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.DialogInterface
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.net.http.SslError
+import android.os.Build
+import android.os.Handler
+import android.os.Looper
+import android.webkit.RenderProcessGoneDetail
+import android.webkit.SslErrorHandler
+import android.webkit.WebView
+import android.app.AlertDialog
+import android.app.Application
+import androidx.webkit.WebViewClientCompat
+import com.msp1974.vacompanion.R
+import com.msp1974.vacompanion.broadcasts.BroadcastSender
+import com.msp1974.vacompanion.settings.PageLoadingStage
+import com.msp1974.vacompanion.ui.VAViewModel
+import timber.log.Timber
+import java.net.URL
+import androidx.core.net.toUri
+import androidx.lifecycle.viewModelScope
+import com.msp1974.vacompanion.device.authentication.AuthenticationException
+import com.msp1974.vacompanion.device.authentication.IAuthenticationService
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+
+class CustomWebViewClient(val viewModel: VAViewModel): WebViewClientCompat()  {
+    val log = Logger()
+    val config = viewModel.deviceManager.config
+    private val firebase = FirebaseManager.getInstance(config.context)
+    private val resources = viewModel.resources
+
+    companion object {
+
+        private const val APP_PREFIX = "app://"
+        private const val INTENT_PREFIX = "intent:"
+        private const val ERROR_URL = "file:///android_asset/web/error.html"
+    }
+
+    override fun onRenderProcessGone(
+        view: WebView,
+        detail: RenderProcessGoneDetail?
+    ): Boolean {
+        log.e("Webview render process gone: $detail")
+        var reason = FirebaseManager.RENDER_PROCESS_CRASHED
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O || detail?.didCrash() != true) {
+            reason = FirebaseManager.RENDER_PROCESS_KILLED
+        }
+        firebase.logEvent (reason, mapOf("detail" to detail.toString()))
+        try {
+            view.reload()
+        } catch (e: Exception) {
+            log.e("Failed to reload webview: $e")
+            // Broadcast to activity to handle webview restart
+            BroadcastSender.sendBroadcast(config.context, BroadcastSender.WEBVIEW_CRASH)
+        }
+        return true
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
+        url.let {
+            try {
+                val pm: PackageManager = config.context.packageManager
+                val activityContext = config.context.takeIf { it is Application || it is Activity } ?: return false
+
+                // If the url is our client id then capture the auth code and get an access token
+                if (it.contains(IAuthenticationService.CLIENT_ID)) {
+                    val authCode = url.toUri().getQueryParameter("code") ?: ""
+                    if (authCode != "") {
+                        // Get access token using auth token
+                        viewModel.viewModelScope.launch {
+                            try {
+                                viewModel.deviceManager.authenticationManager.getAccessToken(
+                                    authCode
+                                )
+                                withContext(Dispatchers.Main) {
+                                    if (config.accessToken != "") {
+                                        view.loadUrl(viewModel.deviceManager.authenticationManager.getHAUrl())
+                                    } else {
+                                        view.loadUrl(viewModel.deviceManager.authenticationManager.getExternalAuthUrl())
+                                    }
+                                }
+                            } catch (e: AuthenticationException) {
+                                Timber.e("Failed to get access token: $e")
+                                BroadcastSender.sendBroadcast(
+                                    config.context,
+                                    BroadcastSender.TOAST_MESSAGE,
+                                    "Error: Unable to authenticate with HomeAssistant - ${e.message}"
+                                )
+                            }
+                        }
+                    }
+                } else if (it.startsWith(APP_PREFIX)) {
+                    Timber.d("Launching the app")
+                    val intent = pm.getLaunchIntentForPackage(
+                        it.substringAfter(APP_PREFIX),
+                    )
+                    if (intent != null) {
+                        StreamingLaunch.prepare(intent, it.substringAfter(APP_PREFIX))
+                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                        activityContext.startActivity(intent)
+                        StreamingHomeReturn.launched(activityContext, it.substringAfter(APP_PREFIX))
+                    } else {
+                        Timber.w("No intent to launch app found")
+                    }
+                    return true
+                } else if (it.startsWith(INTENT_PREFIX)) {
+                    Timber.d("Launching the intent")
+                    val intent =
+                        Intent.parseUri(it, Intent.URI_INTENT_SCHEME)
+                    StreamingLaunch.prepare(intent, intent.`package`)
+                    val intentPackage = intent.`package`?.let { it1 ->
+                        pm.getLaunchIntentForPackage(
+                            it1,
+                        )
+                    }
+                    if (intentPackage == null && !intent.`package`.isNullOrEmpty()) {
+                        Timber.w("No app found for intent prefix")
+                    } else {
+                        activityContext.startActivity(intent)
+                        StreamingHomeReturn.launched(activityContext, intent.`package`)
+                    }
+                    return true
+                } else if (!it.contains(it)) {
+                    Timber.d("Launching browser")
+                    val browserIntent = Intent(Intent.ACTION_VIEW, it.toUri())
+                    activityContext.startActivity(browserIntent)
+                    return true
+                } else {
+                    // Do nothing.
+                }
+            } catch (e: Exception) {
+                Timber.e(e, "Unable to override the URL")
+            }
+        }
+        return true
+    }
+
+    override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
+        if (url != ERROR_URL) {
+            setPageLoadingState(PageLoadingStage.STARTED)
+        }
+        super.onPageStarted(view, url, favicon)
+    }
+
+    override fun onPageFinished(view: WebView?, url: String?) {
+        val haBaseUrl = viewModel.deviceManager.authenticationManager
+            .getBaseUrl()
+            .toString()
+            .removeSuffix("/")
+        if (
+            view is CustomWebView &&
+            !url.isNullOrBlank() &&
+            url.startsWith(haBaseUrl, ignoreCase = true) &&
+            !url.contains("/auth/authorize") &&
+            config.accessToken.isNotBlank() &&
+            config.refreshToken.isNotBlank()
+        ) {
+            // A reconnect can replace the page while a native refresh is in flight,
+            // losing the original JavaScript callback. Re-inject the current session
+            // after the replacement page is ready.
+            viewModel.viewModelScope.launch {
+                view.requestAuthorisation()
+            }
+        }
+        if (view is CustomWebView && url != ERROR_URL) {
+            view.injectDisplayScriptIfNeeded()
+        }
+        if (url != ERROR_URL && viewModel.vacaState.value.webViewPageLoadingStage == PageLoadingStage.AUTHORISED) {
+            Handler(Looper.getMainLooper()).postDelayed({
+                setPageLoadingState(PageLoadingStage.LOADED)
+            }, 1000)
+            Timber.d("Page finished loading: $url")
+        }
+        super.onPageFinished(view, url)
+    }
+
+    fun setPageLoadingState(stage: PageLoadingStage) {
+        viewModel.setWebViewPageLoadingState(stage)
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onReceivedError(
+        view: WebView,
+        errorCode: Int,
+        description: String,
+        failingUrl: String
+    ) {
+        Timber.e("Received error: $errorCode: $description")
+        setPageLoadingState(PageLoadingStage.ERROR)
+        view.loadUrl(ERROR_URL)
+    }
+
+    @SuppressLint("WebViewClientOnReceivedSslError")
+    override fun onReceivedSslError(
+        view: WebView,
+        handler: SslErrorHandler,
+        error: SslError
+    ) {
+        log.e("SSL Error: $error")
+        if (!config.ignoreSSLErrors) {
+            var message = resources.getString(R.string.dialog_message_ssl_generic)
+            when (error.primaryError) {
+                SslError.SSL_UNTRUSTED -> message =
+                    resources.getString(R.string.dialog_message_ssl_untrusted)
+                SslError.SSL_EXPIRED -> message =
+                    resources.getString(R.string.dialog_message_ssl_expired)
+                SslError.SSL_IDMISMATCH -> message =
+                    resources.getString(R.string.dialog_message_ssl_mismatch)
+                SslError.SSL_NOTYETVALID -> message =
+                    resources.getString(R.string.dialog_message_ssl_not_yet_valid)
+            }
+            message += resources.getString(R.string.dialog_message_ssl_continue)
+            val alertDialog = AlertDialog.Builder(view.context)
+            alertDialog.apply {
+                setTitle(resources.getString(R.string.dialog_title_ssl_error))
+                setMessage(message)
+                setPositiveButton(resources.getString(R.string.dialog_button_yes)) { _: DialogInterface?, _: Int ->
+                    handler.proceed()
+                    config.ignoreSSLErrors = true
+                }
+                setNeutralButton(resources.getString(R.string.dialog_button_always_yes)) { _: DialogInterface?, _: Int ->
+                    config.ignoreSSLErrors = true
+                    config.alwaysIgnoreSSLErrors = true
+                    handler.proceed()
+                }
+                setNegativeButton(resources.getString(R.string.dialog_button_no)) { _: DialogInterface?, _: Int ->
+                    super.onReceivedSslError(view, handler, error)
+                    setPageLoadingState(PageLoadingStage.ERROR)
+                    view.loadUrl(ERROR_URL)
+                }
+            }.create().show()
+        } else {
+            handler.proceed()
+        }
+    }
+
+    override fun doUpdateVisitedHistory(
+        view: WebView,
+        url: String,
+        isReload: Boolean,
+    ) {
+        config.currentPath = URL(url).path
+    }
+
+}

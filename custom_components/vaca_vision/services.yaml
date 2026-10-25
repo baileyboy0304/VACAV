@@ -1,0 +1,40 @@
+show_alarm:
+  name: Show alarm popup
+  description: Show a small popup until Select or Back is pressed on the remote.
+  fields:
+    device_id:
+      required: true
+      selector:
+        device:
+          integration: vaca_vision
+    title:
+      default: Alarm
+      selector:
+        text:
+    message:
+      default: Time is up
+      selector:
+        text:
+dismiss_alarm:
+  name: Dismiss alarms
+  description: Dismiss all alarm popups on the selected device.
+  fields:
+    device_id:
+      required: true
+      selector:
+        device:
+          integration: vaca_vision
+show_dashboard:
+  name: Show dashboard
+  description: Display a dashboard using the app's overlay size and fade timings.
+  fields:
+    device_id:
+      required: true
+      selector:
+        device:
+          integration: vaca_vision
+    path:
+      required: true
+      example: /view-assist/weather
+      selector:
+        text:

@@ -1,0 +1,41 @@
+{
+  "domain": "vaca_vision",
+  "name": "VACA_Vision",
+  "codeowners": [
+    "@baileyboy0304"
+  ],
+  "config_flow": true,
+  "dependencies": [
+    "http",
+    "frontend",
+    "websocket_api",
+    "assist_pipeline",
+    "ffmpeg",
+    "tts",
+    "zeroconf",
+    "tag"
+  ],
+  "after_dependencies": [
+    "view_assist",
+    "media_source",
+    "wyoming",
+    "music_assistant",
+    "esphome"
+  ],
+  "documentation": "https://github.com/baileyboy0304/VACAV",
+  "integration_type": "device",
+  "iot_class": "local_push",
+  "loggers": [
+    "custom_components.vaca_vision"
+  ],
+  "requirements": [
+    "wyoming>=1.7.1",
+    "adb-shell==0.4.4",
+    "aioesphomeapi==46.2.0"
+  ],
+  "version": "0.3.0",
+  "zeroconf": [
+    "_vaca-vision._tcp.local."
+  ],
+  "issue_tracker": "https://github.com/baileyboy0304/VACAV/issues"
+}

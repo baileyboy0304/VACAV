@@ -1,0 +1,35 @@
+<resources>
+    <string name="app_name">VACA_Vision</string>
+
+    <string name="audio_playback_attribution">"This app plays audio"</string>
+    <string name="empty" />
+
+    <string name="service_notification_channel_name">View Assist</string>
+    <string name="service_notification_channel_description">View Assist Runningâ€¦</string>
+    <string name="service_notification_title">View Assist Companion App</string>
+    <string name="service_notification_message">Background services runningâ€¦</string>
+
+    <string name="dialog_title_ssl_error">SSL Certificate Error</string>
+    <string name="dialog_message_ssl_continue">Do you want to continue anyway?</string>
+    <string name="dialog_message_ssl_not_yet_valid">The certificate is not yet valid.</string>
+    <string name="dialog_message_ssl_mismatch">The certificate Hostname is mismatched.</string>
+    <string name="dialog_message_ssl_expired">The certificate has expired.</string>
+    <string name="dialog_message_ssl_untrusted">The certificate authority is not trusted.</string>
+    <string name="dialog_message_ssl_generic">SSL certificate error.</string>
+    <string name="dialog_button_yes">Yes</string>
+    <string name="dialog_button_always_yes">Always Yes</string>
+    <string name="dialog_button_no">No</string>
+
+    <string name="button_update_required">Install update</string>
+
+    <string name="status_initialising">Initialising</string>
+    <string name="status_checking_for_update">Checking for update</string>
+    <string name="status_no_permissions">Required permissions not granted</string>
+    <string name="status_waiting_for_network">Waiting for network</string>
+    <string name="status_waiting_for_connection">Waiting for connection</string>
+    <string name="status_app_update_required">App update to v%1$s required</string>
+    <string name="status_downloading_update">Downloading update</string>
+    <string name="status_installing_update">Installing update</string>
+    <string name="close_app">Close App</string>
+
+</resources>

@@ -1,0 +1,95 @@
+/* Reset and base settings */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #1e1e2f;
+  color: #e0e0e0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 20px;
+}
+
+/* Main container for error content */
+.error-container {
+  max-width: 600px;
+  width: 100%;
+}
+
+/* Icon styling */
+.error-icon {
+  width: 120px;
+  height: 120px;
+  margin: 0 auto 10px;
+  fill: #ff6b6b;
+  filter: drop-shadow(0 4px 6px rgba(36, 107, 143, 0.5));
+}
+
+/* Error code styling */
+.error-code {
+  font-size: 3rem;
+  font-weight: 900;
+  margin-bottom: 15px;
+  letter-spacing: 0.15em;
+  user-select: none;
+  color: #3093C5;
+  text-shadow: 1px 1px 7px rgba(36, 107, 143, 0.7);
+}
+
+/* Error message */
+.error-message {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+  text-shadow: 1px 1px 5px rgba(0,0,0,0.4);
+}
+
+/* Error description */
+.error-description {
+  font-size: 1.1rem;
+  color: #bbbbcc;
+  line-height: 1.5;
+  width: 90%;
+  margin: 0 auto;
+}
+
+/* Responsive adjustments */
+
+@media (max-width: 600px) {
+  .error-icon {
+    width: 90px;
+    height: 90px;
+    margin-bottom: 25px;
+  }
+  .error-code {
+    font-size: 5rem;
+  }
+  .error-message {
+    font-size: 1.5rem;
+  }
+  .error-description {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 350px) {
+  .error-code {
+    font-size: 3.5rem;
+    letter-spacing: 0.1em;
+  }
+  .error-message {
+    font-size: 1.2rem;
+  }
+  .error-description {
+    font-size: 0.9rem;
+  }
+}

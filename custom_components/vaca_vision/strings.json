@@ -1,0 +1,245 @@
+{
+  "title": "VACA_Vision",
+  "config": {
+    "flow_title": "VACA_Vision",
+    "step": {
+      "user": {
+        "title": "Connect VACAVision",
+        "description": "Connect a running VACAVision app. Echo Show installation is handled by the Linux installer.",
+        "menu_options": {
+          "install_standard": "on an Android display",
+          "install_overlay": "in overlay mode on a FireTV",
+          "install_dot": "on an Android display, with a paired echo-dot-assist",
+          "discover": "Find a running instance",
+          "manual": "Connect an installed device by IP address"
+        }
+      },
+      "confirm": {
+        "title": "Configure {name}",
+        "description": "Choose the device role. On Fire TV, the paired Dot supplies the microphone and wakeword; replies and Sendspin play through the TV while Vision keeps overlays. An existing Vision device will be updated in place.",
+        "data": {
+          "name": "Device name",
+          "role": "Device role",
+          "dashboard": "Initial dashboard path"
+        },
+        "data_description": {
+          "name": "Name this display in Home Assistant, for example Kitchen Athena. Its unique device ID stays unchanged."
+        }
+      },
+      "crown": {
+        "title": "Crown Assist and Sendspin",
+        "description": "Crown must already be installed on this ES8. Disable its old Wyoming entry before continuing, to prevent two voice connections. Select this ES8’s Music Assistant Sendspin player. Voice, display and forwarded music controls will appear on one Vision device. The physical mute button remains authoritative.",
+        "data": {
+          "crown_port": "Crown Wyoming port",
+          "sendspin_entity": "Crown Sendspin player"
+        }
+      },
+      "dot": {
+        "title": "Display and Dot with sendspin",
+        "description": "Select the Echo Dot running upstream echo-dot-assist. Its microphone and wakeword feed this assistant. Replies and Sendspin play on the display (through the TV for Fire TV overlays). Vision keeps the Dot’s existing ESPHome settings and becomes its sole voice connection. A Dot already paired with another Vision display cannot be selected.",
+        "data": {
+          "dot_satellite": "Echo Dot voice satellite",
+          "ducking_percent": "Music reduction during speech (%)"
+        }
+      },
+      "adb_required": {
+        "title": "Install ADB before proceeding",
+        "description": "Home Assistant needs the adb-shell Python client. VACA_Vision declares this dependency and HA normally installs it automatically. Check Settings → System → Logs for a dependency installation error, restore HA internet access, then restart HA and retry. No ADB add-on, Android SDK or computer installation is required. If HA cannot load this integration at all, the same dependency error appears in its logs."
+      },
+      "target": {
+        "title": "Prepare your device",
+        "description": "{prerequisites}\n\nHome Assistant includes its own ADB client. Enter a device on the same reachable network. When prompted on the device, accept the “VACA_Vision Home Assistant” debugging key and select Always allow. A key previously accepted for your computer does not authorise HA. Known HA devices are suggestions; inspection confirms compatibility.",
+        "data": {
+          "host": "Device address (select or enter an IP)",
+          "adb_port": "Network ADB port"
+        }
+      },
+      "review_install": {
+        "title": "Ready to install on {model}",
+        "description": "Address: {host}\n\nDetected Android API {sdk}; device profile: {profile}.\n\n{action}.\n\nPermissions: {permissions}.\n\nThe matching APK is included with this integration and its checksum is checked before installation. Existing Vision settings are preserved. Original VACA is kept separate. Select Submit to install."
+      },
+      "installed": {
+        "title": "Complete setup on your display",
+        "description": "Vision has been installed and opened. Complete any remaining on-device prompts, then select Submit to connect it to HA. Sign into the HA dashboard on the display when its login page appears. If the app is not ready yet, this step will wait for you to retry."
+      },
+      "manual": {
+        "title": "Connect an installed Vision app",
+        "description": "Enter the Echo Show IP address. VACAVision checks its connection ports automatically.",
+        "data": {
+          "host": "Device IP address",
+          "port": "Vision port"
+        },
+        "data_description": {
+          "port": "Leave blank for automatic detection. Override only for a custom installation."
+        }
+      },
+      "discover": {
+        "title": "Running VACA_Vision devices",
+        "description": "These devices answered the Vision discovery handshake and are not configured in HA yet. Select a device to connect.",
+        "data": {
+          "device": "Detected display"
+        }
+      },
+      "no_devices": {
+        "title": "No new Vision devices found",
+        "description": "Configured Vision devices already appear under this integration. Original VACA devices require installation from the main menu. Multicast discovery may be blocked between networks; you can enter an address instead.",
+        "menu_options": {
+          "discover": "Search again",
+          "manual": "Connect by address",
+          "user": "Return to installation choices"
+        }
+      },
+      "upstream": {
+        "title": "Upstream EDA on this ES8",
+        "description": "Vision owns this device. Remove its separate ESPHome entry first. EDA must run on the same host as Vision. This prototype retains EDA playback.",
+        "data": {
+          "eda_port": "EDA API port",
+          "eda_noise_psk": "EDA encryption key",
+          "ma_entry_id": "Music Assistant server",
+          "ma_player_id": "EDA Sendspin player ID",
+          "eda_native_indicator": "Use EDA voice indicator only"
+        },
+        "data_description": {
+          "eda_native_indicator": "Install the no-animation View Assist overlay and select it only for the View Assist device linked to this satellite. Existing custom overlays are preserved.",
+          "eda_noise_psk": "Leave blank for automatic encrypted adoption of an unkeyed EDA. VACAV stores its key privately in HA. If EDA already has a key, enter that existing key."
+        }
+      },
+      "confirm_es8": {
+        "title": "Add this Echo Show",
+        "description": "The Echo Show role, dashboard and voice connection are selected automatically. VACAVision will connect the matching Music Assistant player and expose it to Home Assistant.",
+        "data": {
+          "name": "Device name"
+        }
+      },
+      "upstream_auto": {
+        "title": "Finish connecting this Echo Show",
+        "description": "If asked, select this Echo Show’s physical Sendspin player by name. If no player is listed, open Music Assistant → Settings → Players and pair the Echo using its Sendspin token from the Echo Dot Assist settings page: {settings_url}. Then return and select Submit to retry.",
+        "data": {
+          "music_player": "Echo Show music player",
+          "eda_noise_psk": "Existing API encryption key"
+        },
+        "data_description": {
+          "eda_noise_psk": "Needed only when this Echo already has a key that VACAVision has not saved. This is the API encryption key, not the Sendspin pairing token."
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Cannot connect to the device. Check its address, that VACAVision and Echo Dot Assist are running, and retry.",
+      "wrong_device": "This is not VACA_Vision. Original VACA and VACAOverlay cannot connect.",
+      "adb_failed": "ADB setup failed. Check ADB debugging, accept the key on the TV and retry. You can leave the option off to continue.",
+      "adb_key_failed": "Home Assistant could not create or read its ADB key. Check access to its .storage folder.",
+      "adb_connect_failed": "HA cannot connect to network ADB at this address. Enable ADB debugging on the target and check its address, port and network access. Installing ADB on your computer does not enable it on the device.",
+      "adb_auth_failed": "The device has not authorised Home Assistant. Accept HA’s debugging key on the device, select Always allow, then retry.",
+      "adb_app_missing": "ADB connected, but VACA_Vision is not installed on this TV. Install its APK first.",
+      "adb_command_failed": "ADB connected, but a setup command timed out or failed. Check the TV is awake and retry.",
+      "adb_permission_failed": "The device did not grant the required display or Bluetooth permission. Check its debugging restrictions and retry.",
+      "adb_launch_failed": "Vision was installed but could not be opened. Open Vision on the device, then use Connect an installed Vision app by address.",
+      "crown_in_use": "Disable the existing Wyoming entry for this ES8 first. Vision must be its only voice connection.",
+      "invalid_sendspin": "Select this ES8’s Music Assistant Sendspin media player.",
+      "crown_unavailable": "Cannot reach Crown. Install/start Crown on the ES8 first.",
+      "wrong_crown": "This endpoint is not Crown Assist.",
+      "invalid_dot": "Select an echo-dot-assist ESPHome satellite.",
+      "dot_unavailable": "Enable the native ESPHome settings entry first.",
+      "dot_in_use": "This Dot is already paired with another Vision display.",
+      "dot_remove_to_unpair": "Remove this Vision entry to restore the native Dot before changing its role. To replace only the microphone, select another Dot in the options.",
+      "adb_not_installed": "Install ADB before proceeding. HA could not load its adb-shell dependency. Check HA logs, restore internet access for dependency installation, restart HA, and retry.",
+      "unsupported_android": "This build requires Android 7.1 (API 25) or later and an ARM processor. This device is not compatible.",
+      "select_display_address": "This is an Echo Dot. Enter the display address instead; select its paired Dot later.",
+      "not_fire_tv": "This device was not recognised as a Fire TV. Use the Android display option for a standard display.",
+      "choose_fire_tv": "This device is a Fire TV. Return to the installation menu and choose the Fire TV overlay option.",
+      "es8_prerequisite": "This is not the supported AEOCW Echo Show 8 with Crown installed. Complete echo-show-assist unlocking and Crown setup first.",
+      "apk_missing": "The bundled APKs or package manifest are missing. Install the complete VACA_Vision integration release and retry.",
+      "apk_invalid": "A bundled APK failed its integrity check. Replace the integration with a complete VACA_Vision release before proceeding.",
+      "apk_install_failed": "Android rejected the APK. It may have a different signing key or a newer version already installed. Nothing was uninstalled. Check Android installation logs before retrying.",
+      "target_changed": "The target identity or setup changed after inspection. Inspect the address again before installing.",
+      "target_identity_missing": "ADB did not provide a stable device identity. Installation stopped to avoid writing to an unidentified target.",
+      "crown_policy_failed": "Crown’s firewall policy could not be safely updated. Check its apps.tsv format and filesystem permissions.",
+      "crown_root_required": "Crown firewall setup requires the root ADB access provided by the supported ES8 unlock. Complete that setup first.",
+      "installation_cancelled": "Installation was cancelled. Any completed APK installation is retained; you can retry to finish setup.",
+      "role_requires_update": "The installed Vision app does not support the selected role. Install the matching current Vision APK, then retry.",
+      "eda_already_owned": "This EDA endpoint already has an owner. Remove the separate ESPHome entry before pairing.",
+      "not_eda": "This endpoint is not echo-dot-assist.",
+      "eda_identity_changed": "The physical EDA device changed. Re-pair explicitly.",
+      "ma_unavailable": "Music Assistant must be loaded.",
+      "ma_player_missing": "The Sendspin player ID was not found.",
+      "ma_player_not_exposed": "Enable Expose to Home Assistant for this player in Music Assistant first. Use the Music Assistant entity as the View Assist music player.",
+      "eda_key_required": "EDA already has an encryption key or refused provisioning. Supply its existing ESPHome encryption key; do not reset it.",
+      "ma_pair_first": "No available physical Sendspin player found. Pair the Echo in Music Assistant, then select Submit to check again."
+    },
+    "abort": {
+      "already_configured": "This Vision device is already configured.",
+      "wrong_device": "This device belongs to a different integration or Vision protocol version.",
+      "cannot_connect": "Cannot connect to the Vision app.",
+      "device_updated": "The existing Vision device has been updated. Its device identity and dashboard settings have been preserved.",
+      "device_changed": "This device changed or was removed during setup. Start again.",
+      "dot_remove_to_unpair": "Remove this Vision entry to restore the native Dot before changing its role. To replace only the microphone, select another Dot in the options.",
+      "setup_prepared": "Installer settings saved. Add the discovered VACAVision device in Devices & services.",
+      "setup_prepare_failed": "Could not save installer settings. Check the app is running and reachable, then retry."
+    },
+    "progress": {
+      "inspect": "Connecting to ADB and inspecting the device. Accept Home Assistant’s debugging key on the device if prompted. This can take up to a minute. No APK is installed during inspection.",
+      "install": "Installing the matching Vision app and applying its device permissions. Keep the display connected and awake. APK transfer and installation can take several minutes."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "VACA_Vision device configuration",
+        "description": "Configure this device. Crown owns audio on ES8. Display and Dot roles use the Dot microphone and play replies and Sendspin on the display; Fire TV retains overlays.",
+        "data": {
+          "name": "Device name",
+          "role": "Device role",
+          "dashboard": "Initial dashboard path",
+          "crown_port": "Crown Wyoming port",
+          "sendspin_entity": "Crown Sendspin player",
+          "dot_satellite": "Paired Dot satellite entity",
+          "ducking_percent": "Music reduction during speech (%)",
+          "eda_native_indicator": "Use EDA voice indicator only"
+        },
+        "data_description": {
+          "eda_native_indicator": "Install the no-animation View Assist overlay and select it only for the View Assist device linked to this satellite. Existing custom overlays are preserved.",
+          "name": "Name this display in Home Assistant, for example Kitchen Athena. Its unique device ID stays unchanged."
+        }
+      },
+      "es8": {
+        "title": "Echo Show settings",
+        "description": "Change the display name, startup dashboard or music player. Connection details are available under advanced options.",
+        "data": {
+          "name": "Device name",
+          "dashboard": "Startup dashboard path",
+          "music_player": "Music player",
+          "host": "Device address",
+          "port": "VACAVision port",
+          "eda_port": "Echo Dot Assist API port",
+          "eda_noise_psk": "Existing API encryption key"
+        }
+      }
+    },
+    "error": {
+      "adb_failed": "ADB setup failed. Enable debugging on the TV, accept Home Assistant's key and retry.",
+      "adb_key_failed": "Home Assistant could not create or read its ADB key. Check access to its .storage folder.",
+      "adb_connect_failed": "Cannot connect to ADB on this TV address and port. Enable ADB debugging on the Fire TV and check the address and network.",
+      "adb_auth_failed": "The TV has not authorised Home Assistant. Accept the debugging key on the TV, select Always allow, then retry.",
+      "adb_app_missing": "ADB connected, but VACA_Vision is not installed on this TV. Install its APK first.",
+      "adb_command_failed": "ADB connected, but a setup command timed out or failed. Check the TV is awake and retry.",
+      "adb_permission_failed": "ADB connected, but the TV did not grant overlay permission. Check the Fire TV debugging settings and retry.",
+      "adb_launch_failed": "Overlay permission is allowed, but VACA_Vision could not be opened automatically. Open the app on the TV, then retry with Grant overlay permission unchecked.",
+      "crown_in_use": "Disable the existing Wyoming entry for this ES8 first. Vision must be its only voice connection.",
+      "invalid_sendspin": "Select this ES8’s Music Assistant Sendspin media player.",
+      "crown_unavailable": "Cannot reach Crown. Install/start Crown on the ES8 first.",
+      "wrong_crown": "This endpoint is not Crown Assist.",
+      "wrong_device": "This is not VACA_Vision. Original VACA and VACAOverlay cannot connect.",
+      "cannot_connect": "Cannot reach the Vision app. Check the address, port 10900 and app permissions.",
+      "invalid_dot": "Select an echo-dot-assist ESPHome satellite.",
+      "dot_unavailable": "Enable the native ESPHome settings entry first.",
+      "dot_in_use": "This Dot is already paired with another Vision display.",
+      "dot_remove_to_unpair": "Remove this Vision entry to restore the native Dot before changing its role. To replace only the microphone, select another Dot in the options."
+    }
+  },
+  "issues": {
+    "native_indicator": {
+      "title": "Could not configure the voice indicator for {name}",
+      "description": "Vision could not install or configure the optional View Assist overlay. Check write access to view_assist/custom_overlays and .storage, and check the logs for an overlay ID conflict. Resolve the cause and reload this Vision entry. Voice continues to work. You can also turn off Use EDA voice indicator only in Vision options and configure View Assist yourself."
+    }
+  }
+}

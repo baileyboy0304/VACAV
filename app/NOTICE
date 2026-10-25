@@ -1,0 +1,26 @@
+VACA_Vision 0.2.0 - independent local variant
+
+Based on View Assist Companion App (VACA), created by MSP1974 (Mark Parker),
+and View Assist (VA), created by Dinki, with their respective contributors.
+Their work is the foundation of this variant. They are not responsible for
+Vision-specific changes and no endorsement is implied.
+
+VACA: https://github.com/msp1974/ViewAssistCompanionApp
+VACA integration: https://github.com/msp1974/ViewAssist_Companion_App
+View Assist: https://github.com/dinki/View-Assist
+
+Derived from the supplied V13Overlay, V13OverlayIntegration and Android 7.1.2
+ES8 sources. Vision adds separate application/integration identities, a shared
+display protocol, role-aware entities, voice integration, revised BLE setup,
+and a matching picker companion. Original native VACA audio is excluded.
+
+Retain all upstream LICENSE and NOTICE files. See standard/LICENSE,
+overlay/LICENSE in the app source bundle;
+the integration's Apache-2.0 license is retained in LICENSE.
+
+The Display and Dot role interoperates with unmodified echo-dot-assist by
+Julian Imhof (Gamer92000), https://github.com/Gamer92000/echo-dot-assist, MIT.
+It retains upstream firmware ownership; Vision handles output routing and ducking.
+The shared Sendspin output derives from the supplied V13Overlay renderer and
+Sendspin protocol SDK; its license is retained at shared-output/sendspin-protocol/LICENSE
+in the app source. AndroidX Media3 is Apache-2.0 licensed.

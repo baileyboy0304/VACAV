@@ -1,0 +1,10 @@
+ViewAssist_Companion_App_Overlay
+
+Derived from View Assist Companion App integration by msp1974 and contributors.
+https://github.com/msp1974/ViewAssist_Companion_App
+Upstream revision: 530849d96d375ae2054735a6b9c48bf8a420485d (0.13.3).
+
+This Overlay fork replaces the satellite-owned transport and voice/tablet
+platforms with a separate Overlay identity, entry-owned TCP connection,
+dashboard/media entities, alarm popup routing, update checks and optional
+Fire TV ADB permission setup. Licensed under Apache License 2.0.

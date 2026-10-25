@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+.gradle/
+.kotlin/
+build/
+.idea/
+local.properties
+*.keystore
+*.jks
+*.log
+*.idsig
