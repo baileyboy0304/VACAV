@@ -184,6 +184,26 @@
   "options": {
     "step": {
       "init": {
+        "title": "Configure VACAVision",
+        "menu_options": {
+          "es8": "Device settings",
+          "dashboards": "Install example dashboards"
+        }
+      },
+      "es8": {
+        "title": "Echo Show settings",
+        "description": "Change the display name, startup dashboard or music player. Connection details are available under advanced options.",
+        "data": {
+          "name": "Device name",
+          "dashboard": "Startup dashboard path",
+          "music_player": "Music player",
+          "host": "Device address",
+          "port": "VACAVision port",
+          "eda_port": "Echo Dot Assist API port",
+          "eda_noise_psk": "Existing API encryption key"
+        }
+      },
+      "connection": {
         "title": "VACA_Vision device configuration",
         "description": "Configure this device. Crown owns audio on ES8. Display and Dot roles use the Dot microphone and play replies and Sendspin on the display; Fire TV retains overlays.",
         "data": {
@@ -201,18 +221,9 @@
           "name": "Name this display in Home Assistant, for example Kitchen Athena. Its unique device ID stays unchanged."
         }
       },
-      "es8": {
-        "title": "Echo Show settings",
-        "description": "Change the display name, startup dashboard or music player. Connection details are available under advanced options.",
-        "data": {
-          "name": "Device name",
-          "dashboard": "Startup dashboard path",
-          "music_player": "Music player",
-          "host": "Device address",
-          "port": "VACAVision port",
-          "eda_port": "Echo Dot Assist API port",
-          "eda_noise_psk": "Existing API encryption key"
-        }
+      "dashboards": {
+        "title": "Install example dashboards",
+        "description": "[Open the dashboard installer for {name}]({url})\n\nThe installer reads this device’s View Assist settings and shows the destinations for review. Existing dashboards are backed up before replacement."
       }
     },
     "error": {

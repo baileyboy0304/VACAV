@@ -639,10 +639,23 @@ class VisionConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
 
 class VisionOptionsFlow(config_entries.OptionsFlow):
-    async def async_step_es8(self, user_input=None):
-        return await self.async_step_init(user_input)
-
     async def async_step_init(self, user_input=None):
+        values = {**self.config_entry.data, **self.config_entry.options}
+        if values.get("role") == ROLE_UPSTREAM:
+            return self.async_show_menu(step_id="init", menu_options=["es8", "dashboards"])
+        return await self.async_step_connection(user_input)
+
+    async def async_step_dashboards(self, user_input=None):
+        if user_input is not None:
+            return self.async_create_entry(title="", data=dict(self.config_entry.options))
+        return self.async_show_form(step_id="dashboards", data_schema=vol.Schema({}),
+            description_placeholders={"name": self.config_entry.title,
+                "url": "/vacav-setup?entry_id=" + self.config_entry.entry_id})
+
+    async def async_step_es8(self, user_input=None):
+        return await self.async_step_connection(user_input)
+
+    async def async_step_connection(self, user_input=None):
         errors = {}
         values = {**self.config_entry.data, **self.config_entry.options}
         values["name"] = self.config_entry.title
@@ -760,5 +773,5 @@ class VisionOptionsFlow(config_entries.OptionsFlow):
                 }
             )
         return self.async_show_form(
-            step_id="init", errors=errors, data_schema=vol.Schema(schema)
+            step_id="connection", errors=errors, data_schema=vol.Schema(schema)
         )

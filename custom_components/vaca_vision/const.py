@@ -2,7 +2,7 @@
 
 DOMAIN = "vaca_vision"
 NAME = "VACA_Vision"
-VERSION = "0.4.0"
+VERSION = "0.5.0"
 MIN_APP_VERSION = "0.1.0"
 PROTOCOL = "vaca-vision"
 PROTOCOL_VERSION = 1

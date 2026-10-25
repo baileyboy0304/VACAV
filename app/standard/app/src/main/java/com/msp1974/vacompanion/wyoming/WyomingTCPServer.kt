@@ -38,13 +38,21 @@ abstract class WyomingTCPServer(private val context: Context, val deviceManager:
     private fun update() {
         deviceManager.updateServerState(WyomingServerStatus(state, connected, connected && satellite?.state == SatelliteState.RUNNING))
     }
+    private fun installerName(): String = runCatching {
+        val file = File(context.filesDir, "es8-install.json")
+        if (Build.DEVICE != "athena" || !file.isFile || file.length() > 8192) return@runCatching null
+        val data = JSONObject(file.readText())
+        val name = data.optString("name").trim()
+        name.takeIf { data.optInt("version") == 1 && it.length in 1..80 && it.none { c -> c.isISOControl() } }
+    }.getOrNull() ?: "VACA_Vision ${Build.MODEL}"
+
     suspend fun startServer() {
         if (closed || state != ServerState.STOPPED) return
         state = ServerState.STARTING; update()
         try {
             val version = context.packageManager.getPackageInfo(context.packageName, 0).versionName ?: "0.1.0"
             server = VacaServer(
-                { VacaProtocol.info("VACA_Vision ${Build.MODEL}", config.uuid, version) },
+                { VacaProtocol.info(installerName(), config.uuid, version) },
                 { VacaProtocol.capabilities("${Build.MANUFACTURER} ${Build.MODEL}", Build.VERSION.SDK_INT, version, false).apply {
                     if (Build.DEVICE == "athena") runCatching {
                         val file = File(context.filesDir, "es8-install.json")

@@ -1,9 +1,9 @@
 {
   "standard": {
     "file": "vision-standard.apk",
-    "sha256": "f7d2b1fe8b821f3083ee797c059cbf545ad2304e1d60c9c90e7ed4ad57dccb8f",
-    "version": "0.2.3-upstream-prototype.11",
-    "version_code": 17,
+    "sha256": "b22731da5e5ccf4983b3a25d54a7bfd71e7df60c500c58950e01e7f7e2fd18e3",
+    "version": "0.2.3-upstream-prototype.12",
+    "version_code": 18,
     "package": "com.mph1970.vacavision",
     "min_sdk": 25
   },

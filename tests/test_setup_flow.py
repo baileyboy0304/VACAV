@@ -53,6 +53,7 @@ class Flow(unittest.IsolatedAsyncioTestCase):
         modules={n:ModuleType(n) for n in names}
         class Base:
             def __init_subclass__(cls,**kwargs): pass
+            def async_show_menu(self,**kw): return {'type':'menu',**kw}
             def async_show_form(self,**kw): return {'type':'form',**kw}
             def async_abort(self,**kw): return {'type':'abort',**kw}
             def async_create_entry(self,**kw): return {'type':'create_entry',**kw}
@@ -154,3 +155,12 @@ class Flow(unittest.IsolatedAsyncioTestCase):
         result=await self.flow.async_step_manual(payload)
         self.assertEqual(result['reason'],'setup_prepared')
         self.assertEqual(self.defaults.call_args.args[2]['sendspin_client_id'],'A'*43)
+
+    async def test_options_offer_device_settings_and_dashboards(self):
+        m=sys.modules['flow_test.config_flow']
+        flow=m.VisionOptionsFlow(); flow.config_entry=NS(data={'role':'standard_upstream_eda'},options={},entry_id='garden',title='Garden')
+        result=await flow.async_step_init()
+        self.assertEqual(result['menu_options'],['es8','dashboards'])
+        result=await flow.async_step_dashboards()
+        self.assertEqual(result['description_placeholders']['url'],'/vacav-setup?entry_id=garden')
+        self.assertEqual(list(result['data_schema'].schema),[])

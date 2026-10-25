@@ -27,8 +27,8 @@ android {
         applicationId = "com.mph1970.vacavision"
         minSdk = 25
         targetSdk = 36
-        versionName = "0.2.3-upstream-prototype.11"
-        versionCode = 17
+        versionName = "0.2.3-upstream-prototype.12"
+        versionCode = 18
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 

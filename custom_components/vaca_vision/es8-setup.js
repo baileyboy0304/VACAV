@@ -2,7 +2,7 @@ class VacavSetup extends HTMLElement {
   set hass(value) { this._hass = value; if (!this.started) { this.started = true; this.init(); } }
   get hass() { return this._hass; }
   async api(operation, fields = {}) {
-    return this.hass.callWS({type: 'vaca_vision/es8_setup', operation, entry_id: this.device?.value, ...fields});
+    return this.hass.callWS({type: 'vaca_vision/es8_setup', operation, entry_id: this.entryId, ...fields});
   }
   async run(action) {
     if (this.busy) return;
@@ -11,54 +11,42 @@ class VacavSetup extends HTMLElement {
     try { await action(); } catch (error) { this.message.textContent = error.message || String(error); }
     finally { this.busy = false; this.querySelectorAll('button').forEach(b => b.disabled = false); }
   }
-  select(label, id) {
-    const row = document.createElement('label'); row.textContent = label;
-    const select = document.createElement('select'); select.id = id; row.append(select); this.form.append(row); return select;
-  }
-  choices(select, values, selected) {
-    select.replaceChildren();
-    for (const [value, label] of values) { const option = document.createElement('option'); option.value = value; option.textContent = label; select.append(option); }
-    if (selected && values.some(v => v[0] === selected)) select.value = selected;
-  }
   async init() {
+    this.entryId = new URLSearchParams(location.search).get('entry_id');
     this.innerHTML = `<style>
-      vacav-setup {display:block; padding:24px; max-width:900px; color:var(--primary-text-color); font-family:var(--paper-font-body1_-_font-family, sans-serif)}
-      vacav-setup label {display:block;margin:18px 0} vacav-setup select, vacav-setup input {display:block;padding:12px;width:95%;font:inherit;color:var(--primary-text-color);background:var(--card-background-color)}
+      vacav-setup {display:block;padding:24px;max-width:800px;color:var(--primary-text-color);font-family:var(--paper-font-body1_-_font-family,sans-serif)}
+      vacav-setup label {display:block;margin:18px 0} vacav-setup input {display:block;padding:12px;width:95%;font:inherit;color:var(--primary-text-color);background:var(--card-background-color)}
       vacav-setup button {padding:12px 20px;margin:8px 8px 8px 0;cursor:pointer} vacav-setup pre {white-space:pre-wrap;line-height:1.6}
-    </style><h1>Finish Echo Show setup</h1>
-    <p>Pair the Echo’s Sendspin player in Music Assistant, add the discovered VACA_Vision device, then sign into HA on the Echo Show touchscreen. Complete its voice-assistant setup and select the pipeline.</p>
-    <p>This page uses your current HA administrator session. The Linux installer needs no HA login or token.</p>
-    <div id="form"></div><label><input id="heard" type="checkbox" style="display:inline;width:auto"> I have heard an Assist reply and music from this Echo Show.</label><pre id="summary"></pre><p id="message" role="status"></p>
-    <button id="import">Read installer choices from Echo</button><button id="refresh">Refresh connections</button><button id="create">Configure View Assist</button><button id="deploy">Install dashboards</button>`;
-    this.form = this.querySelector('#form'); this.message = this.querySelector('#message');
-    this.device = this.select('Echo Show', 'device'); this.weather = this.select('Weather (inherited where possible)', 'weather');
-    const row = document.createElement('label'); row.textContent = 'Music Assistant sidebar path';
-    this.music = document.createElement('input'); row.append(this.music); this.form.append(row);
-    this.querySelector('#import').onclick = () => this.run(async () => { await this.api('import'); await this.refresh(); });
+      vacav-setup [hidden] {display:none!important}
+      vacav-setup a {color:var(--primary-color)}
+    </style><a href="/config/integrations/integration/vaca_vision">Back to VACAVision</a>
+    <h1>Install example dashboards</h1><h2 id="device-name"></h2>
+    <p>Review the settings from this device’s View Assist entry and the dashboard destinations.</p>
+    <pre id="summary"></pre><label id="music-row" hidden>Music Assistant page path<input id="music" placeholder="/app/your-addon_music_assistant"></label>
+    <p id="message" role="status"></p><button id="refresh">Refresh connections</button><button id="deploy">Install example dashboards</button>
+    <pre id="paths"></pre>`;
+    this.message = this.querySelector('#message'); this.music = this.querySelector('#music');
     this.querySelector('#refresh').onclick = () => this.run(() => this.refresh());
-    this.device.onchange = () => this.run(() => this.refresh());
-    this.querySelector('#create').onclick = () => this.run(async () => {
-      const r = await this.api('create_va', {weather:this.weather.value}); this.message.textContent = r.message;
-    });
     this.querySelector('#deploy').onclick = () => this.run(() => this.deploy());
     await this.run(async () => {
-      const devices = await this.api('list'); this.choices(this.device, devices.map(d => [d.id, d.name]));
+      if (!this.entryId) throw new Error('Open this action from your VACAVision device’s Configure menu.');
       const panels = await this.hass.callWS({type:'get_panels'});
       const matches = Object.keys(panels).filter(k => k === 'music-assistant' || k.endsWith('_music_assistant'));
       if (matches.length === 1) this.music.value = '/' + matches[0];
-      if (!devices.length) { this.message.textContent = 'No prepared Echo found. Run the current Linux installer, then add its discovered VACA_Vision device. If it is already added, select Read installer choices from Echo.'; return; }
+      this.querySelector('#music-row').hidden = !!this.music.value;
       await this.refresh();
     });
   }
   async refresh() {
     this.data = await this.api('inspect');
-    this.choices(this.weather, this.data.weather.map(e => [e, this.hass.states[e]?.attributes.friendly_name || e]), this.weather.value || this.data.suggested_weather);
+    this.querySelector('#device-name').textContent = this.data.name;
     this.querySelector('#summary').textContent = [
+      'View Assist: ' + (this.data.va_sensor || 'Create this device in View Assist'),
       'Microphone: ' + (this.data.microphone || 'waiting'), 'Display: ' + (this.data.display || 'waiting for touchscreen sign-in'),
-      'Music and alerts: ' + (this.data.player || 'waiting'), 'View Assist: ' + (this.data.va_sensor || 'not configured'),
+      'Music and alerts: ' + (this.data.player || 'waiting'), 'Weather: ' + (this.data.suggested_weather || 'Set weather in View Assist'),
       'Dashboards: ' + ['home_slug','va_slug','tv_slug'].map(k => '/' + this.data.plan[k]).join(', ')
     ].join('\n');
-    this.message.textContent = this.data.errors.join('\n') || 'Connections ready. Configure View Assist, refresh after it reloads, then install dashboards.';
+    this.message.textContent = this.data.errors.join('\n') || (this.data.va_sensor ? 'Ready to review dashboard installation.' : 'Create this device in View Assist using the README settings, then refresh.');
   }
   async confirmReplacement(names) {
     return new Promise(resolve => {
@@ -74,7 +62,7 @@ class VacavSetup extends HTMLElement {
     });
   }
   async deploy() {
-    if (!this.querySelector('#heard').checked) throw new Error('Test voice and music on this Echo and tick the confirmation first.');
+    if (!this.music.value.trim()) throw new Error('Open Music Assistant from HA’s sidebar and enter the page path after the host and port.');
     const prepared = await this.api('dashboards', {music_path:this.music.value.trim()});
     const names = Object.keys(prepared.configs);
     const resources = await this.hass.callWS({type:'lovelace/resources'});
@@ -105,6 +93,7 @@ class VacavSetup extends HTMLElement {
     }
     const done = await this.api('complete');
     this.message.textContent = done.message + '\nBackup: ' + backup.backup;
+    this.querySelector('#paths').textContent = 'View Assist → Configure → Dashboard Options\n' + Object.entries(done.paths).map(([k,v]) => k + ': ' + v).join('\n');
   }
 }
 customElements.define('vacav-setup', VacavSetup);
