@@ -123,3 +123,11 @@ class Flow(unittest.IsolatedAsyncioTestCase):
         handler=getattr(self.flow,'async_step_'+result['step_id'])
         self.choices.return_value=({self.key:'Garden'},[self.key])
         self.assertEqual((await handler({}))['type'],'create_entry')
+
+    async def test_installer_handoff_after_discovery_is_used_on_submit(self):
+        await self.flow.async_step_confirm()
+        self.defaults.return_value={'name':'Installer name','dashboard':'/later-home/home','role':'standard_upstream_eda'}
+        self.choices.return_value=({self.key:'Garden'},[self.key])
+        result=await self.flow.async_step_confirm_es8({'name':'User name'})
+        self.assertEqual(result['data']['dashboard'],'/later-home/home')
+        self.assertEqual(result['data']['name'],'User name')

@@ -456,15 +456,14 @@ class VisionConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def async_step_confirm(self, user_input=None):
         from .setup_helpers import setup_defaults
-        if not getattr(self, "_defaults_loaded", False):
-            defaults = await setup_defaults(self.hass, self._device["id"])
-            if self._existing_entry is None:
-                self._device.update(defaults)
-                if self._device["port"] == 26900 and ROLE_UPSTREAM in self._device["roles"]:
-                    self._device["role"] = ROLE_UPSTREAM
-                # HA's standard dashboard is a safe landing page without the wizard.
-                self._device.setdefault("dashboard", "/lovelace/0")
-            self._defaults_loaded = True
+        # Discovery may precede the Linux installer handoff; refresh on submit.
+        defaults = await setup_defaults(self.hass, self._device["id"])
+        if self._existing_entry is None:
+            self._device.update(defaults)
+            if self._device["port"] == 26900 and ROLE_UPSTREAM in self._device["roles"]:
+                self._device["role"] = ROLE_UPSTREAM
+            # HA's standard dashboard is a safe landing page without the wizard.
+            self._device.setdefault("dashboard", "/lovelace/0")
         es8 = self._device.get("role") == ROLE_UPSTREAM
         if user_input is not None:
             self._device.update(user_input)

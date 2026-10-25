@@ -36,7 +36,7 @@ Set the View Assist microphone to this device's `assist_satellite` entity and th
 
 ## Source and acknowledgements
 
-The integration is in `custom_components/vaca_vision/`, including its installation payloads. Android source is in `app/`. Supporting payload metadata is in `payloads/`.
+The integration is in `custom_components/vaca_vision/`, including its installation payloads. Android source is in `app/`.
 
 This variant is based on [MSP1974's View Assist Companion App](https://github.com/msp1974/ViewAssistCompanionApp) and works with [Dinki's View Assist](https://github.com/dinki/View-Assist) ([documentation](https://dinki.github.io/View-Assist/)). Original authors do not maintain or endorse these variant-specific changes. See `LICENSE`, `NOTICE`, and the retained app/component licenses.
 
