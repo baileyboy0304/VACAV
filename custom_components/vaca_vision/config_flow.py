@@ -380,6 +380,8 @@ class VisionConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         return await self.async_step_confirm()
 
     async def async_step_manual(self, user_input=None):
+        if user_input and user_input.get("prepare_only"):
+            return await self.async_step_user(user_input)
         errors = {}
         if user_input is not None:
             for port in ([user_input["port"]] if user_input.get("port") else [26900, DEFAULT_PORT]):
@@ -395,7 +397,9 @@ class VisionConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     vol.Required("host"): str,
                     **({vol.Optional("port"): vol.All(vol.Coerce(int), vol.Range(min=1, max=65535))}
                        if self.show_advanced_options else {}),
-                }
+                },
+                # Authenticated installer metadata is validated by async_step_user.
+                extra=vol.ALLOW_EXTRA,
             ),
         )
 

@@ -147,3 +147,10 @@ class Flow(unittest.IsolatedAsyncioTestCase):
         r=await self.flow.async_step_user({'prepare_only':True,'host':'192.0.2.1','name':'Garden','dashboard':'/home/home','sendspin_client_id':'A'*43})
         self.assertEqual(r['description_placeholders']['setup_protocol'],'2')
         self.assertEqual(self.defaults.call_args.args[2]['sendspin_client_id'],'A'*43)
+
+    async def test_manual_form_accepts_installer_payload_through_ha_schema(self):
+        form=await self.flow.async_step_manual()
+        payload=form['data_schema']({'host':'192.0.2.1','port':26900,'prepare_only':True,'name':'Garden','dashboard':'/home/home','sendspin_client_id':'A'*43})
+        result=await self.flow.async_step_manual(payload)
+        self.assertEqual(result['reason'],'setup_prepared')
+        self.assertEqual(self.defaults.call_args.args[2]['sendspin_client_id'],'A'*43)
