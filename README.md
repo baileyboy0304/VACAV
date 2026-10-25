@@ -66,17 +66,47 @@ Continue with selecting the voice assistant below.
 **3. Select the voice assistant.** Open the new device page and select its Assist
 pipeline. Then sign into HA on the Echo Show touchscreen.
 
-The Linux installer passes the device name, startup dashboard and public Sendspin identity to HA. This also identifies MA universal players that do not report an IP or MAC address. Without that installer handoff, the display starts at `/lovelace/0`; change it through the integration's configuration options.
+The Linux installer writes non-secret choices into the Echo’s private app folder
+over USB. VACAVision reads those choices when you add the Echo: name, dashboard
+names, selected streaming services and public Sendspin identity. No HA credentials
+are sent to the installer or the Echo through this handoff.
 
-If the integration cannot uniquely match a player by its public Sendspin identity, device IP or MAC address, it asks you to select a **named physical Sendspin player**. It never guesses from similar device names or selects a sync group. If none is available, pair the Echo in Music Assistant, then retry. No raw player ID is required.
+After adding the Echo, sign into HA on its touchscreen and complete its voice
+assistant setup. Open **VACAV Setup** in the HA sidebar. This administrator-only
+page uses your existing browser session to check connections, configure View
+Assist and install the example dashboards. It detects the MA sidebar path and
+inherits weather where possible. It backs up existing dashboards before asking
+HA to replace them; replacement needs your confirmation. Dashboard frontend assets
+are included and served by this integration. Install `custom:button-card` first.
 
-Encryption is automatic for a new device, and a stored key is reused. Only a device already secured with an unknown key needs a key entered manually. Obtain that existing API encryption key from the Echo Dot Assist settings or your original setup records. HA stores adopted keys privately; include HA's configuration in your backups. Keys are not printed into installer logs.
+Initial browser sign-in opens HA’s built-in `/lovelace/0` dashboard. Finished
+Athena dashboards are selected only after setup. An existing device added before
+0.4.0 needs the current Linux installer’s USB handoff; the setup page offers to
+read those choices without removing the existing device.
+
+If no physical player matches, select it by name after pairing it in Music
+Assistant. No raw player ID is required. Encryption is provisioned automatically;
+a stored key is checked against the device before reuse. A wiped Echo can be
+adopted again only after its hardware identity and initial-provisioning state are
+verified. Connectivity failures never cause a key reset. Key storage is private.
+
+The bundled app also supports a double tap to open Home/Keep on/Brightness over
+other apps outside playback. Taps still reach the app underneath. Single-tap
+playback controls and automatic hiding remain available.
 
 ## View Assist audio settings
 
 Use the **official Music Assistant entity for this physical Echo Show** for View Assist's music player and media/alerts player. Do not select VACAVision's Music proxy or a similarly named player belonging to another device. A sync group can include the physical player and a lyrics player; retain the physical player in View Assist's settings so group-aware automations can resolve its membership.
 
 Set the View Assist microphone to this device's `assist_satellite` entity and the display to the value of its display sensor. On the Echo Show, VACAVision's own Sendspin engine is disabled: Echo Dot Assist owns the Sendspin endpoint.
+
+## Updating older Android builds
+
+The prototype.11 APK uses the Linux build’s signing certificate. The previously
+bundled prototype.10 APK used a different certificate. Android cannot install this
+APK over that build; the installer stops rather than deleting app data. An upgrade
+needs the previous signing key or an explicitly chosen reinstall and HA browser
+sign-in. Fresh installations can use the new APK directly.
 
 ## Source and acknowledgements
 

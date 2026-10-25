@@ -44,6 +44,8 @@ class UpstreamControls(
     private var controlsVisible = false
     private val playerProbe = StreamingPlayerProbe(context)
     private var touchGeneration = 0
+    private val doubleTap = OutsideDoubleTap()
+    private var manualControls = false
     private val hideControls = Runnable { setControlsVisible(false) }
     private val density get() = context.resources.displayMetrics.density
     private fun dp(value: Int) = (value * density).roundToInt()
@@ -57,7 +59,12 @@ class UpstreamControls(
     private val expiry = object : Runnable {
         override fun run() {
             if (lease.expired(SystemClock.elapsedRealtime())) end("expired")
-            if (controlsVisible) playerProbe.check { if (!it) setControlsVisible(false) }
+            if (controlsVisible) {
+                val generation = touchGeneration
+                playerProbe.check(manualControls) {
+                    if (generation == touchGeneration && !it) setControlsVisible(false)
+                }
+            }
             if (root != null || session.isNotEmpty()) handler.postDelayed(this, 1000)
         }
     }
@@ -71,9 +78,19 @@ class UpstreamControls(
                     // Android has already targeted the underlying app: observing this
                     // notification neither consumes nor replays its original touch.
                     val generation = ++touchGeneration
-                    if (controlsVisible) setControlsVisible(false)
+                    val summon = doubleTap.tap(SystemClock.elapsedRealtime())
+                    if (summon) playerProbe.check(allowNonPlayback = true) { eligible ->
+                        if (generation == touchGeneration && eligible) {
+                            manualControls = true
+                            setControlsVisible(true)
+                        }
+                    }
+                    else if (controlsVisible) setControlsVisible(false)
                     else playerProbe.check { eligible ->
-                        if (generation == touchGeneration && eligible) setControlsVisible(true)
+                        if (generation == touchGeneration && eligible) {
+                            manualControls = false
+                            setControlsVisible(true)
+                        }
                     }
                     return true
                 }
@@ -241,6 +258,7 @@ class UpstreamControls(
     fun refresh() = handler.post { updateKeepOn() }
     fun close() = handler.post {
         touchGeneration++
+        doubleTap.reset()
         playerProbe.close()
         end("closed"); handler.removeCallbacks(expiry)
         handler.removeCallbacks(hideControls)

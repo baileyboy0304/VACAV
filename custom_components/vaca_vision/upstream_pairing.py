@@ -41,17 +41,16 @@ async def _authenticated_values(hass, values):
     if values.get("eda_noise_psk"):
         return values
     address = f'{values["host"]}:{values.get("eda_port", 26053)}'
-    store = Store(hass, 1, "vaca_vision.eda_key_" + hashlib.sha256(address.encode()).hexdigest())
+    store = Store(hass, 1, "vaca_vision.eda_key_" + hashlib.sha256(address.encode()).hexdigest(), private=True, atomic_writes=True)
     saved = await store.async_load()
-    if saved and saved.get("confirmed"):
-        if values.get("eda_mac") and values["eda_mac"].lower() != saved["mac"]:
-            raise ValueError("eda_identity_changed")
-        return {**values, "eda_noise_psk": saved["key"]}
+    if saved and values.get("eda_mac") and values["eda_mac"].lower() != saved["mac"]:
+        raise ValueError("eda_identity_changed")
 
     def client(key):
         return APIClient(values["host"], values.get("eda_port", 26053), "", noise_psk=key)
 
-    # If setup stopped after the device accepted the key, recover that exact key.
+    # Verify even a confirmed key: a reset preserves the MAC/IP but erases the key.
+    # Only an explicit encryption rejection permits the zero-PSK provisioning check.
     if saved:
         cli = client(saved["key"])
         try:
@@ -74,6 +73,9 @@ async def _authenticated_values(hass, values):
             mac = check_identity(info, values, saved["mac"] if saved else None)
             if not info.api_encryption_provisionable:
                 raise ValueError("eda_key_required")
+            if saved:
+                saved = {**saved, "confirmed": False}
+                await store.async_save(saved)
             if not saved:
                 saved = {"key": base64.b64encode(secrets.token_bytes(32)).decode(), "mac": mac, "confirmed": False}
                 await store.async_save(saved)

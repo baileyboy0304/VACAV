@@ -51,8 +51,8 @@ async def validate_upstream(hass, values, entry_id=None, *, expose_music=False):
     from .upstream_music import validate_music
 
     await validate_music(hass, values, expose=expose_music)
-    values.update(await authenticated_values(hass, values))
-    cli = client_for(values)
+    authenticated = await authenticated_values(hass, values)
+    cli = client_for(authenticated)
     try:
         async with asyncio.timeout(15):
             await cli.connect()
@@ -68,6 +68,7 @@ async def validate_upstream(hass, values, entry_id=None, *, expose_music=False):
                     raise ValueError("eda_already_owned")
             if values.get("eda_mac") and values["eda_mac"] != mac:
                 raise ValueError("eda_identity_changed")
+            values.update(authenticated)  # Cache only after a successful handshake and identity check.
             return mac
     finally:
         with contextlib.suppress(Exception):

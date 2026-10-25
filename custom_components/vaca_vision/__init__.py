@@ -32,6 +32,8 @@ async def async_setup(hass, config):
     from .picker_panel import async_setup_panel
 
     await async_setup_panel(hass)
+    from .es8_panel import setup_panel
+    await setup_panel(hass)
 
     async def handle(call):
         target = call.data["device_id"]

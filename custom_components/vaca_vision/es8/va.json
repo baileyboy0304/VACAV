@@ -1,0 +1,4683 @@
+{
+  "title": "View Assist",
+  "button_card_templates": {
+    "variable_template": {
+      "variables": {
+        "dashboardversion": "1.4.0",
+        "var_assistsat_entity": "sensor.es8_setup",
+        "var_dashboard": "/view-assist-athena",
+        "var_mic_switch": "[[[\n  try {\n    var micdevice = hass.states[variables.var_assistsat_entity].attributes.mute_switch;\n    return `${micdevice}`;\n  } catch { return \"\"}\n]]]",
+        "var_wake_switch": "[[[\n  try {\n    var micdevice = hass.states[variables.var_assistsat_entity].attributes.mic_device;\n    if (micdevice.startsWith(\"assist_satellite.\")) {\n      var wakebutton = micdevice.replace(\"assist_satellite.\", \"button.\") + \"_wake\";\n      if (wakebutton in hass.states) {\n        return `${wakebutton}`;\n      }\n    }\n    return \"\";\n  } catch {\n    return \"\";\n  }\n]]]",
+        "var_mediaplayer_device": "[[[\n  try {\n    var mediadevice = hass.states[variables.var_assistsat_entity].attributes.mediaplayer_device;\n    return `${mediadevice}`;\n  } catch { return \"\";}\n]]]",
+        "var_mediaplayer_mute": "[[[\n  try {\n    var mediadevice = hass.states[variables.var_assistsat_entity].attributes.mediaplayer_device;\n    var mediaplayerstate = hass.states[mediadevice].attributes.is_volume_muted;\n    return `${mediaplayerstate}`;\n  } catch { return \"\";}\n]]]",
+        "var_current_time": "[[[\n  return `<viewassist-clock server_time=true mode='time' hour24=${variables.var_assistsat_entity_use_24_hour_time}></viewassist-clock>`;\n]]]",
+        "var_date_short": "[[[\n  return `<viewassist-clock server_time=true mode=\"date\"></viewassist-clock>`;\n]]]",
+        "var_date_long": "[[[\n  return `<viewassist-clock server_time=true format='%A, %B %d, %Y'></viewassist-clock>`;\n]]]",
+        "var_assistsat_entity_font_style": "[[[\n  try\n  {\n    return states[variables.var_assistsat_entity].attributes.font_style;\n  } catch { return  \"Roboto\"}\n]]]\n",
+        "var_assistsat_entity_weather_entity": "[[[\n  try\n  {\n    return states[variables.var_assistsat_entity].attributes.weather_entity;\n  } catch { return  \"\"}\n]]]\n",
+        "var_assistsat_entity_responsive_status_icons_size": "[[[\n  try {\n    const baseSize = states[variables.var_assistsat_entity].attributes.status_icons_size || \"6vw\";\n\n    if (window.viewAssistResponsive?.orientation === \"portrait\") {\n      const numericValue = parseFloat(baseSize);\n      const unit = baseSize.replace(numericValue.toString(), '');\n      return `${numericValue * 1.5}${unit}`;\n    }\n\n    return baseSize;\n  } catch {\n    return window.viewAssistResponsive?.orientation === \"portrait\" ? \"9vw\" : \"6vw\";\n  }\n]]]\n",
+        "var_assistsat_entity_use_24_hour_time": "[[[\n  try\n  {\n    return states[variables.var_assistsat_entity].attributes.use_24_hour_time;\n  } catch { return  false}\n]]]\n",
+        "var_title": "[[[\n  try\n  {\n    return states[variables.var_assistsat_entity].attributes.title;\n  } catch { return  \"\"}\n]]]",
+        "var_message": "[[[\n  try\n  {\n    return states[variables.var_assistsat_entity].attributes.message;\n  } catch { return  \"\"}\n]]]",
+        "var_image": "[[[\n  try\n  {\n    return states[variables.var_assistsat_entity].attributes.image;\n  } catch { return  \"\"}\n]]]",
+        "var_font_size": "[[[\n  try\n  {\n    return states[variables.var_assistsat_entity].attributes.message_font_size;\n  }\n  catch { return  \"\"}\n]]]",
+        "var_weather_temperature": "[[[\n  try\n  {\n    return (states[variables.var_assistsat_entity_weather_entity].attributes.temperature  + '\u00b0');\n  }\n  catch { return  \"\"}\n]]]",
+        "var_weather_icon": "[[[\n  const weatherIconsDay  = {\n    \"clear-night\": \"mdi:weather-night\",\n    \"cloudy\": \"mdi:weather-cloudy\",\n    \"dust\": \"mdi:weather-dust\",\n    \"fog\": \"mdi:weather-fog\",\n    \"hail\": \"mdi:weather-hail\",\n    \"hazy\": \"mdi:weather-hazy\",\n    \"hurricane\": \"mdi:weather-hurricane\",\n    \"lightning\": \"mdi:weather-lightning\",\n    \"lightning-rainy\": \"mdi:weather-lightning-rainy\",\n    \"partlycloudy\": \"mdi:weather-partly-cloudy\",\n    \"partly-lightning\": \"mdi:weather-partly-lightning\",\n    \"partly-rainy\": \"mdi:weather-partly-rainy\",\n    \"partly-snowy\": \"mdi:weather-partly-snowy\",\n    \"partly-snowy-rainy\": \"mdi:weather-partly-snowy-rainy\",\n    \"pouring\": \"mdi:weather-pouring\",\n    \"rainy\": \"mdi:weather-rainy\",\n    \"snowy\": \"mdi:weather-snowy\",\n    \"snowy-heavy\": \"mdi:weather-snowy-heavy\",\n    \"snowy-rainy\": \"mdi:weather-snowy-rainy\",\n    \"sunny\": \"mdi:weather-sunny\",\n    \"tornado\": \"mdi:weather-tornado\",\n    \"windy\":  \"mdi:weather-windy\",\n    \"windy-variant\": \"mdi:weather-windy-variant\",\n  };\n  const weatherIconsNight = {\n    ...weatherIconsDay,\n    clear: \"mdi:weather-night\",\n    sunny: \"mdi:weather-night\",\n    partlycloudy: \"mdi:weather-night-partly-cloudy\",\n  };\n  try {\n  const condition = states[variables.var_assistsat_entity_weather_entity]?.state;\n  const icons = states['sun.sun']?.state === 'below_horizon' ? weatherIconsNight : weatherIconsDay;\n  return icons[condition] || 'mdi:help';\n} catch { return 'mdi:help'; }\n]]]",
+        "var_current_view": "[[[\ntry {\n  const base = (variables.var_dashboard || '/view-assist-athena').replace(/\\/+$/, '');\n  const path = window.location.pathname;\n  return path.startsWith(base + '/') ? path.slice(base.length + 1).split('/')[0] : '';\n} catch { return ''; }\n]]]"
+      }
+    },
+    "responsive_base": {
+      "variables": {
+        "var_orientation_sensor": "[[[\n  try {\n    const orientationSensor = hass.states[variables.var_assistsat_entity]?.attributes?.orientation_sensor;\n\n    if (orientationSensor && orientationSensor in hass.states) {\n      const state = hass.states[orientationSensor].state;\n      if (state === \"portrait\" || state === \"landscape\") {\n        return state;\n      }\n    }\n\n    return \"\";\n  } catch {\n    return \"\";\n  }\n]]]",
+        "var_orientation": {
+          "value": "[[[\n  const sensorOrientation = variables.var_orientation_sensor;\n  const windowOrientation = window.innerHeight > window.innerWidth \n    ? \"portrait\" \n    : \"landscape\";\n  const currentOrientation = sensorOrientation || windowOrientation;\n\n  if (!window.viewAssistResponsive) {\n    window.viewAssistResponsive = {\n      orientation: currentOrientation,\n      sensor_available: !!sensorOrientation,\n      lastUpdate: Date.now()\n    };\n  } else {\n    const oldOrientation = window.viewAssistResponsive.orientation;\n    window.viewAssistResponsive.sensor_available = !!sensorOrientation;\n\n    if (oldOrientation !== currentOrientation) {\n      window.viewAssistResponsive.orientation = currentOrientation;\n      window.viewAssistResponsive.lastUpdate = Date.now();\n\n      window.dispatchEvent(new CustomEvent('view-assist-responsive-change', {\n        detail: window.viewAssistResponsive,\n        bubbles: true\n      }));\n    }\n  }\n\n  return window.viewAssistResponsive.orientation;\n]]]",
+          "force_eval": true
+        }
+      }
+    },
+    "body_template": {
+      "template": [
+        "variable_template",
+        "status_icons_content",
+        "responsive_base"
+      ],
+      "show_state": false,
+      "show_icon": false,
+      "show_name": false,
+      "tap_action": {
+        "action": "call-service",
+        "service": "view_assist.set_state",
+        "service_data": {
+          "entity_id": "[[[ try { return variables.var_assistsat_entity } catch { return  \"\" }]]]",
+          "mode": "hold"
+        }
+      },
+      "double_tap_action": {
+        "action": "call-service",
+        "service": "view_assist.set_state",
+        "service_data": {
+          "entity_id": "[[[ try { return variables.var_assistsat_entity } catch { return  \"\" } ]]]",
+          "mode": "normal"
+        }
+      },
+      "hold_action": {
+        "action": "call-service",
+        "service": "switch.toggle",
+        "service_data": {
+          "entity_id": "[[[ try { return variables.var_mic_switch } catch { return  \"\" } ]]]"
+        }
+      },
+      "styles": {
+        "grid": [
+          {
+            "grid-template-areas": "\"title status\"\n\"message message\"\n\"assist assist\"\n"
+          },
+          {
+            "grid-template-rows": "min-content 1fr"
+          },
+          {
+            "grid-template-columns": "1fr 1fr"
+          },
+          {
+            "row-gap": ".5rem"
+          }
+        ],
+        "card": [
+          {
+            "min-height": "[[[\n  try {\n    const screenMode = hass.states[variables.var_assistsat_entity]?.attributes?.screen_mode;\n    if (screenMode === 'no_hide' || screenMode === 'hide_sidebar') {\n      return 'calc(100vh - var(--header-height))';\n    }\n    return '100vh';\n  } catch {\n    return '100vh';\n  }\n]]]"
+          },
+          {
+            "max-height": "[[[\n  try {\n    const screenMode = hass.states[variables.var_assistsat_entity]?.attributes?.screen_mode;\n    if (screenMode === 'no_hide' || screenMode === 'hide_sidebar') {\n      return 'calc(100vh - var(--header-height))';\n    }\n    return '100vh';\n  } catch {\n    return '100vh';\n  }\n]]]"
+          },
+          {
+            "height": "[[[\n  try {\n    const screenMode = hass.states[variables.var_assistsat_entity]?.attributes?.screen_mode;\n    if (screenMode === 'no_hide' || screenMode === 'hide_sidebar') {\n      return 'calc(100vh - var(--header-height))';\n    }\n    return '100vh';\n  } catch {\n    return '100vh';\n  }\n]]]"
+          },
+          {
+            "aspect-ratio": "[[[\n  if (!window.viewAssistResponsive) return \"16 / 9\";\n\n  return window.viewAssistResponsive.orientation === \"portrait\" ? \"9 / 16\" : \"16 / 9\";\n]]]"
+          },
+          {
+            "background": "[[[\n  if (variables.background != null) {\n    return `center / cover no-repeat url(${variables.background})`\n  } else if (variables.var_background != null) {\n      return `center / cover no-repeat url(${variables.var_background})`\n  } else {\n    return `center / cover no-repeat ${variables.background_color}`\n  }\n]]]\n"
+          },
+          {
+            "background-size": "cover"
+          },
+          {
+            "border-radius": "0px"
+          },
+          {
+            "overflow": "hidden"
+          },
+          {
+            "color": "white"
+          },
+          {
+            "font-family": "[[[\n  return `\"${variables.var_assistsat_entity_font_style}\", sans-serif`;\n]]]"
+          },
+          {
+            "font-weight": 300
+          },
+          {
+            "position": "relative"
+          },
+          {
+            "box-sizing": "border-box"
+          }
+        ],
+        "custom_fields": {
+          "title": [
+            {
+              "position": "absolute"
+            },
+            {
+              "justify-self": "start"
+            },
+            {
+              "align-self": "start"
+            },
+            {
+              "z-index": 1
+            },
+            {
+              "font-size": "[[[\n  return window.viewAssistResponsive?.orientation === \"portrait\" ? \"220%\" : \"200%\";\n]]]"
+            },
+            {
+              "font-weight": 400
+            },
+            {
+              "width": "max-content"
+            },
+            {
+              "margin-left": "2%"
+            },
+            {
+              "margin-top": "-4%"
+            }
+          ],
+          "status": [
+            {
+              "position": "absolute"
+            },
+            {
+              "justify-self": "end"
+            },
+            {
+              "align-self": "end"
+            },
+            {
+              "justify-content": "right"
+            },
+            {
+              "top": "0vh"
+            },
+            {
+              "right": "0vw"
+            },
+            {
+              "z-index": 1
+            }
+          ]
+        }
+      }
+    },
+    "status_icons_content": {
+      "custom_fields": {
+        "title": "[[[ return variables.var_title ]]]",
+        "status": {
+          "card": {
+            "type": "custom:layout-card",
+            "layout_type": "custom:horizontal-layout",
+            "cards": [
+              {
+                "type": "custom:layout-card",
+                "layout_type": "grid-layout",
+                "layout": {
+                  "margin": 0,
+                  "card_margin": 0,
+                  "place-content": "end",
+                  "grid-template-columns": "[[[\n  const baseIconSize = variables.var_assistsat_entity_responsive_status_icons_size;\n  return `repeat(auto-fit, minmax(${baseIconSize}, ${baseIconSize}))`;\n]]]"
+                },
+                "cards": "[[[{\n  const buttonList = [];\n\n  try {\n    const vaEntity = variables.var_assistsat_entity;\n    if (!vaEntity || !hass.states[vaEntity]) {\n      return [];\n    }\n\n    const statusIcons = hass.states[vaEntity].attributes.status_icons || [];\n    const menuItems = hass.states[vaEntity].attributes.menu_items || [];\n    const menuActive = hass.states[vaEntity].attributes.menu_active || false;\n    const currentView = variables.var_current_view;\n\n    const availableTemplates = new Set();\n    try {\n      const lovelace = document.querySelector(\"home-assistant\")\n        ?.shadowRoot?.querySelector(\"home-assistant-main\")\n        ?.shadowRoot?.querySelector(\"ha-drawer partial-panel-resolver ha-panel-lovelace\")\n        ?.lovelace;\n\n      if (lovelace?.config?.button_card_templates) {\n        Object.keys(lovelace.config.button_card_templates).forEach(template => {\n          availableTemplates.add(template);\n        });\n      }\n    } catch (e) {\n    }\n\n    function isCurrentView(item) {\n      if (!currentView) return false;\n\n      if (typeof item === 'string' && !item.includes(':')) {\n        if (item === currentView) return true;\n\n        const homePath = hass.states[vaEntity]?.attributes?.home_screen || \"/view-assist-athena/clock\";\n        const homeView = homePath.split('/').pop() || \"clock\";\n        const templateViewMap = {\n          \"home\": homeView\n        };\n        if (templateViewMap[item] === currentView) return true;\n        return false;\n      }\n\n      if (typeof item === 'string' && item.includes(':')) {\n        const parts = item.split('|');\n        const typeAndTarget = parts[0];\n        const [type, target] = typeAndTarget.split(':');\n\n        if (type === 'view') {\n          const viewName = target.includes('/') ?\n            target.split('/').pop() : target;\n          return viewName === currentView;\n        }\n      }\n\n      return false;\n    }\n\n    const addedItems = new Set();\n\n    function addIconToList(icon, isDynamicItem = false) {\n      if (icon === \"menu\") return;\n\n      if (isCurrentView(icon)) {\n        return;\n      }\n\n      let buttonConfig;\n\n      if (isDynamicItem) {\n        const type = icon.split(':')[0];\n        buttonConfig = {\n          type: \"custom:button-card\",\n          template: `dynamic_${type}_item`,\n          variables: {\n            menu_item: icon,\n            entity_id: vaEntity\n          }\n        };\n      } else {\n        if (availableTemplates.size > 0 && !availableTemplates.has(icon)) {\n          buttonConfig = {\n            type: \"custom:button-card\",\n            template: \"icon_template\",\n            icon: \"mdi:alert-circle-outline\",\n            name: icon,\n            styles: {\n              card: [{ \"border\": \"2px dashed rgba(255, 152, 0, 0.8)\" }],\n              icon: [{ \"color\": \"rgba(255, 152, 0, 0.9)\" }],\n              name: [{ \n                \"font-size\": \"0.7em\",\n                \"color\": \"rgba(255, 152, 0, 0.9)\",\n                \"padding-top\": \"4px\"\n              }]\n            },\n            show_name: true,\n            tap_action: {\n              action: \"none\"\n            }\n          };\n        } else {\n          buttonConfig = {\n            type: \"custom:button-card\",\n            template: icon\n          };\n        }\n      }\n\n      const key = icon;\n      if (addedItems.has(key)) return;\n\n      addedItems.add(key);\n      buttonList.push(buttonConfig);\n    }\n\n    if (menuActive) {\n      const reversedMenuItems = [...menuItems].reverse();\n      reversedMenuItems.forEach(item => {\n        if (item !== \"menu\") {\n          if (item.includes(':')) {\n            addIconToList(item, true);\n          } else {\n            addIconToList(item, false);\n          }\n        }\n      });\n    }\n\n    statusIcons.forEach(icon => {\n      if (icon !== \"menu\") {\n        if (icon.includes(':')) {\n          addIconToList(icon, true);\n        } else {\n          addIconToList(icon, false);\n        }\n      }\n    });\n\n    if (hass.states[vaEntity].attributes.menu_config === \"menu_enabled_button_visible\" &&\n        !addedItems.has(\"menu\")) {\n      buttonList.push({\n        type: \"custom:button-card\",\n        template: \"menu\"\n      });\n    }\n  } catch (e) {\n  }\n\n  return buttonList;\n}]]]"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "status_icons_overlay": {
+      "template": [
+        "variable_template",
+        "responsive_base",
+        "status_icons_content"
+      ],
+      "show_state": false,
+      "show_icon": false,
+      "show_name": false,
+      "triggers_update": "all",
+      "styles": {
+        "card": null,
+        "custom_fields": {
+          "status": [
+            {
+              "position": "fixed"
+            },
+            {
+              "top": "[[[\n  try {\n    const screenMode = hass.states[variables.var_assistsat_entity]?.attributes?.screen_mode;\n    if (screenMode === 'no_hide' || screenMode === 'hide_sidebar') {\n      return 'calc(0vh + var(--header-height))';\n    }\n    return '0vh';\n  } catch {\n    return '0vh';\n  }\n]]]"
+            },
+            {
+              "right": "0vw"
+            },
+            {
+              "z-index": 4
+            }
+          ]
+        }
+      }
+    },
+    "icon_template": {
+      "template": "variable_template",
+      "color_type": "card",
+      "show_name": false,
+      "size": "90%",
+      "padding": "0px",
+      "styles": {
+        "card": [
+          {
+            "background-color": "transparent"
+          },
+          {
+            "border-width": "0px"
+          },
+          {
+            "aspect-ratio": "1 / 1"
+          }
+        ],
+        "icon": [
+          {
+            "display": "grid"
+          },
+          {
+            "color": "white"
+          }
+        ]
+      }
+    },
+    "dynamic_view_item": {
+      "template": "icon_template",
+      "icon": "[[[\n  const parts = variables.menu_item.split('|');\n  const icon = parts.length > 1 ? parts[1] : 'view-dashboard';\n  return `mdi:${icon}`;\n]]]",
+      "tap_action": {
+        "action": "call-service",
+        "service": "view_assist.navigate",
+        "service_data": {
+          "device": "[[[ return variables.entity_id; ]]]",
+          "path": "[[[\n  const parts = variables.menu_item.split('|');\n  const typeAndTarget = parts[0];\n  const target = typeAndTarget.split(':')[1];\n  const base = variables.var_dashboard || '/view-assist-athena';\n  return target.startsWith('/') ? target : `${base}/${target}`;\n]]]"
+        }
+      }
+    },
+    "dynamic_entity_item": {
+      "template": "icon_template",
+      "state_display": "none",
+      "entity": "[[[\n  const parts = variables.menu_item.split('|');\n  const typeAndTarget = parts[0];\n  return typeAndTarget.split(':')[1];\n]]]",
+      "icon": "[[[\n  const parts = variables.menu_item.split('|');\n  const typeAndTarget = parts[0];\n  const entityId = typeAndTarget.split(':')[1];\n  const iconOptions = parts.length > 1 ? parts[1].split(',') : ['help-circle'];\n\n  let icon = iconOptions[0];\n\n  if (iconOptions.length > 1 && hass.states[entityId]) {\n    const state = hass.states[entityId].state;\n\n    if (state === 'off' && iconOptions[1]) {\n      icon = iconOptions[1];\n    }\n  }\n\n  return `mdi:${icon}`;\n]]]",
+      "tap_action": {
+        "action": "toggle",
+        "entity": "[[[\n  const parts = variables.menu_item.split('|');\n  const typeAndTarget = parts[0];\n  return typeAndTarget.split(':')[1];\n]]]"
+      },
+      "hold_action": {
+        "action": "more-info",
+        "entity": "[[[\n  const parts = variables.menu_item.split('|');\n  const typeAndTarget = parts[0];\n  return typeAndTarget.split(':')[1];\n]]]"
+      }
+    },
+    "dynamic_service_item": {
+      "template": "icon_template",
+      "icon": "[[[\n  const parts = variables.menu_item.split('|');\n  const icon = parts.length > 1 ? parts[1] : 'cog';\n  return `mdi:${icon}`;\n]]]",
+      "tap_action": {
+        "action": "call-service",
+        "service": "[[[\n  const parts = variables.menu_item.split('|');\n  const typeAndTarget = parts[0];\n  return typeAndTarget.split(':')[1];\n]]]",
+        "service_data": {}
+      }
+    },
+    "mediaplayer": {
+      "type": "custom:button-card",
+      "template": "icon_template",
+      "icon": "mdi:volume-off",
+      "tap_action": {
+        "action": "call-service",
+        "service": "media_player.volume_mute",
+        "service_data": {
+          "entity_id": "[[[ return variables.var_mediaplayer_device ]]]",
+          "is_volume_muted": false
+        }
+      }
+    },
+    "mic": {
+      "type": "custom:button-card",
+      "template": "icon_template",
+      "icon": "mdi:microphone-off",
+      "tap_action": {
+        "action": "call-service",
+        "service": "homeassistant.turn_off",
+        "service_data": {
+          "entity_id": "[[[ return variables.var_mic_switch ]]]"
+        }
+      }
+    },
+    "hold": {
+      "type": "custom:button-card",
+      "template": "icon_template",
+      "icon": "mdi:hand-back-left",
+      "tap_action": {
+        "action": "call-service",
+        "service": "view_assist.set_state",
+        "service_data": {
+          "mode": "normal",
+          "entity_id": "[[[ return variables.var_assistsat_entity ]]]"
+        }
+      }
+    },
+    "cycle": {
+      "type": "custom:button-card",
+      "template": "icon_template",
+      "icon": "mdi:sync",
+      "tap_action": {
+        "action": "call-service",
+        "service": "view_assist.set_state",
+        "service_data": {
+          "mode": "normal",
+          "entity_id": "[[[ return variables.var_assistsat_entity ]]]"
+        }
+      }
+    },
+    "dnd": {
+      "type": "custom:button-card",
+      "template": "icon_template",
+      "icon": "mdi:minus-circle",
+      "tap_action": {
+        "action": "call-service",
+        "service": "view_assist.set_state",
+        "service_data": {
+          "do_not_disturb": false,
+          "entity_id": "[[[ return variables.var_assistsat_entity ]]]"
+        }
+      }
+    },
+    "weather": {
+      "type": "custom:button-card",
+      "template": "icon_template",
+      "icon": "mdi:weather-sunny",
+      "tap_action": {
+        "action": "call-service",
+        "service": "view_assist.navigate",
+        "service_data": {
+          "device": "[[[ return variables.var_assistsat_entity ]]]",
+          "path": "[[[ return `${variables.var_dashboard}/weather` ]]]"
+        }
+      }
+    },
+    "home": {
+      "type": "custom:button-card",
+      "template": "icon_template",
+      "icon": "mdi:home",
+      "tap_action": {
+        "action": "call-service",
+        "service": "view_assist.navigate",
+        "service_data": {
+          "device": "[[[ return variables.var_assistsat_entity ]]]",
+          "path": "home"
+        }
+      }
+    },
+    "menu": {
+      "type": "custom:button-card",
+      "template": "icon_template",
+      "icon": "mdi:menu",
+      "tap_action": {
+        "action": "call-service",
+        "service": "view_assist.toggle_menu",
+        "service_data": {
+          "entity_id": "[[[ return variables.var_assistsat_entity ]]]",
+          "show": "[[[ return !states[variables.var_assistsat_entity].attributes.menu_active ]]]"
+        }
+      },
+      "hold_action": {
+        "action": "call-service",
+        "service": "view_assist.set_state",
+        "service_data": {
+          "entity_id": "[[[ return variables.var_assistsat_entity ]]]",
+          "mode": "hold"
+        }
+      }
+    },
+    "camera": {
+      "type": "custom:button-card",
+      "template": "icon_template",
+      "icon": "mdi:cctv",
+      "tap_action": {
+        "action": "call-service",
+        "service": "view_assist.navigate",
+        "service_data": {
+          "device": "[[[ return variables.var_assistsat_entity ]]]",
+          "path": "[[[ return `${variables.var_dashboard}/camera` ]]]"
+        }
+      }
+    },
+    "music": {
+      "type": "custom:button-card",
+      "template": "icon_template",
+      "icon": "mdi:music",
+      "tap_action": {
+        "action": "call-service",
+        "service": "view_assist.navigate",
+        "service_data": {
+          "device": "[[[ return variables.var_assistsat_entity ]]]",
+          "path": "[[[ return `${variables.var_dashboard}/music` ]]]"
+        }
+      }
+    },
+    "wake": {
+      "type": "custom:button-card",
+      "template": "icon_template",
+      "icon": "mdi:button-pointer",
+      "tap_action": {
+        "action": "call-service",
+        "service": "button.press",
+        "service_data": {
+          "entity_id": "[[[ return variables.var_wake_switch ]]]"
+        }
+      }
+    }
+  },
+  "views": [
+    {
+      "title": "Clock",
+      "path": "clock",
+      "type": "panel",
+      "cards": [
+        {
+          "type": "custom:button-card",
+          "template": [
+            "variable_template",
+            "responsive_base",
+            "body_template"
+          ],
+          "triggers_update": "all",
+          "variables": {
+            "clockcardversion": "2.0.1",
+            "var_current_time": "<viewassist-clock server_time=true mode='time' hour24=true></viewassist-clock>",
+            "var_assistsat_entity_responsive_status_icons_size": "clamp(36px, 4vw, 58px)"
+          },
+          "styles": {
+            "grid": [
+              {
+                "grid-template-areas": "[[[ return states[variables.var_assistsat_entity]?.attributes?.mode === 'night' ? '\"heading\" \"face\"' : '\"heading\" \"face\" \"weather\"'; ]]]"
+              },
+              {
+                "grid-template-rows": "[[[ return states[variables.var_assistsat_entity]?.attributes?.mode === 'night' ? 'calc(88px * var(--va-clock-shortcut-scale, 1)) minmax(0,1fr)' : 'calc(88px * var(--va-clock-shortcut-scale, 1)) minmax(0,1fr) auto'; ]]]"
+              },
+              {
+                "height": "100%"
+              },
+              {
+                "row-gap": "clamp(12px, 2cqh, 30px)"
+              },
+              {
+                "grid-template-areas": "[[[ let h = 'heading'; try { if (window.ViewAssistApp?.getViewAssistCAUUID() === \"vision-148898ba-5dcd-43e8-be10-723352651736\") h = 'study_navigation'; } catch (e) {} return states[variables.var_assistsat_entity]?.attributes?.mode === 'night' ? `\"${h}\" \"face\"` : `\"${h}\" \"face\" \"weather\"`; ]]]"
+              },
+              {
+                "grid-template-columns": "minmax(0, 1fr)"
+              }
+            ],
+            "card": [
+              {
+                "background": "[[[\nreturn states[variables.var_assistsat_entity]?.attributes?.mode === 'night' ? '#000000' : 'radial-gradient(ellipse at 4% 5%, #1d3d59 0, transparent 55%), linear-gradient(120deg, #132b40, #101e30 72%)';\n]]]"
+              },
+              {
+                "padding": "clamp(18px, min(3vw, 3.7vh), 80px)"
+              },
+              {
+                "border": "none"
+              },
+              {
+                "box-shadow": "none"
+              },
+              {
+                "container-type": "size"
+              },
+              {
+                "aspect-ratio": "auto"
+              },
+              {
+                "font-family": "Inter, Roboto, system-ui, sans-serif"
+              },
+              {
+                "height": "[[[ const displayState = states[variables.var_assistsat_entity]; const mode = displayState?.attributes?.screen_mode; return !displayState || ['no_hide','hide_sidebar'].includes(mode) ? 'calc(100dvh - var(--header-height, 56px))' : '100dvh'; ]]]"
+              },
+              {
+                "min-height": "[[[ const displayState = states[variables.var_assistsat_entity]; const mode = displayState?.attributes?.screen_mode; return !displayState || ['no_hide','hide_sidebar'].includes(mode) ? 'calc(100dvh - var(--header-height, 56px))' : '100dvh'; ]]]"
+              },
+              {
+                "max-height": "[[[ const displayState = states[variables.var_assistsat_entity]; const mode = displayState?.attributes?.screen_mode; return !displayState || ['no_hide','hide_sidebar'].includes(mode) ? 'calc(100dvh - var(--header-height, 56px))' : '100dvh'; ]]]"
+              },
+              {
+                "--va-clock-shortcut-scale": "1"
+              }
+            ],
+            "custom_fields": {
+              "title": [
+                {
+                  "display": "none"
+                }
+              ],
+              "heading": [
+                {
+                  "justify-self": "start"
+                },
+                {
+                  "align-self": "center"
+                },
+                {
+                  "width": "calc(200px * var(--va-clock-shortcut-scale, 1))"
+                },
+                {
+                  "z-index": 6
+                },
+                {
+                  "opacity": "[[[ return states[variables.var_assistsat_entity]?.attributes?.mode === 'night' ? 0.4 : 1; ]]]"
+                },
+                {
+                  "display": "block"
+                }
+              ],
+              "face": [
+                {
+                  "min-width": 0
+                },
+                {
+                  "min-height": 0
+                },
+                {
+                  "height": "100%"
+                },
+                {
+                  "align-self": "stretch"
+                },
+                {
+                  "z-index": 1
+                }
+              ],
+              "weather": [
+                {
+                  "display": "[[[\nreturn states[variables.var_assistsat_entity]?.attributes?.mode === 'night' ? 'none' : 'block';\n]]]"
+                },
+                {
+                  "width": "100%"
+                },
+                {
+                  "z-index": 2
+                }
+              ],
+              "status": [
+                {
+                  "display": "[[[\nreturn states[variables.var_assistsat_entity]?.attributes?.mode === 'night' ? 'none' : 'block';\n]]]"
+                },
+                {
+                  "top": "clamp(18px, min(3vw, 3.7vh), 80px)"
+                },
+                {
+                  "right": "clamp(18px, min(3vw, 3.7vh), 80px)"
+                },
+                {
+                  "z-index": 5
+                }
+              ]
+            }
+          },
+          "extra_styles": "\n  .clock-face { height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:clamp(10px,2cqh,30px); }\n  .clock-time { font-size:clamp(48px,min(25cqw,42cqh),480px); font-weight:250; letter-spacing:-.055em; line-height:1.05; font-variant-numeric:tabular-nums; white-space:nowrap; }\n  .clock-date { color:#a5b9cf; font-size:clamp(17px,min(2.5cqw,4cqh),48px); font-weight:400; letter-spacing:.015em; }\n  .clock-kicker { display:flex; align-items:center; gap:12px; color:#a5b9cf; font-size:clamp(12px,1.1cqw,22px); letter-spacing:.2em; font-weight:500; }\n  .clock-dot { width:7px; height:7px; border-radius:50%; background:#8fdbed; box-shadow:0 0 18px #8fdbed55; }\n  .clock-weather { display:flex; align-items:center; gap:clamp(14px,2cqw,38px); text-align:left; min-width:0; }\n  .clock-weather ha-icon { color:#8fdbed; --mdc-icon-size:clamp(38px,min(5cqw,9cqh),90px); flex-shrink:0; }\n  .clock-current { flex:1; min-width:0; }\n  .clock-temp { color:#f1f5f9; font-size:clamp(25px,min(3.6cqw,6.5cqh),66px); line-height:1.15; font-weight:350; }\n  .clock-condition { color:#a5b9cf; font-size:clamp(12px,min(1.3cqw,2.5cqh),26px); margin-top:5px; white-space:normal; }\n  .clock-metric { min-width:clamp(60px,9cqw,180px); padding-left:clamp(14px,2.8cqw,50px); border-left:1px solid #ffffff15; }\n  .clock-metric-label { color:#a5b9cf; font-size:clamp(10px,1cqw,19px); margin-bottom:7px; }\n  .clock-metric-value { color:#e2edf5; font-size:clamp(16px,1.8cqw,34px); font-weight:400; }\n  .clock-link { color:#8fdbed; font-size:clamp(16px,2cqw,32px); padding-left:10px; }\n  @container (max-width:600px) { .clock-weather { flex-wrap:wrap; gap:16px; } .clock-metric { flex:1; border:0; padding:14px 0 0; border-top:1px solid #ffffff15; } .clock-metric-label { font-size:12px; } .clock-metric-value { font-size:20px; } .clock-current { flex-basis:60%; } .clock-link { display:none; } .clock-date { font-size:clamp(16px,4cqw,24px); } .clock-time { font-size:32cqw; } }\n",
+          "custom_fields": {
+            "title": "",
+            "heading": {
+              "card": {
+                "type": "horizontal-stack",
+                "cards": [
+                  {
+                    "type": "custom:button-card",
+                    "show_name": true,
+                    "show_icon": true,
+                    "hold_action": {
+                      "action": "none"
+                    },
+                    "double_tap_action": {
+                      "action": "none"
+                    },
+                    "styles": {
+                      "grid": [
+                        {
+                          "grid-template-areas": "\"i\" \"n\""
+                        },
+                        {
+                          "grid-template-columns": "1fr"
+                        },
+                        {
+                          "grid-template-rows": "1fr auto"
+                        },
+                        {
+                          "row-gap": "calc(7px * var(--va-clock-shortcut-scale, 1))"
+                        }
+                      ],
+                      "card": [
+                        {
+                          "background": "#bedef00d"
+                        },
+                        {
+                          "border": "1px solid #bedef035"
+                        },
+                        {
+                          "border-radius": "calc(22px * var(--va-clock-shortcut-scale, 1))"
+                        },
+                        {
+                          "padding": "calc(12px * var(--va-clock-shortcut-scale, 1)) calc(16px * var(--va-clock-shortcut-scale, 1))"
+                        },
+                        {
+                          "width": "calc(96px * var(--va-clock-shortcut-scale, 1))"
+                        },
+                        {
+                          "height": "calc(88px * var(--va-clock-shortcut-scale, 1))"
+                        },
+                        {
+                          "box-shadow": "none"
+                        },
+                        {
+                          "font-family": "Inter,Roboto,system-ui,sans-serif"
+                        }
+                      ],
+                      "icon": [
+                        {
+                          "width": "calc(34px * var(--va-clock-shortcut-scale, 1))"
+                        },
+                        {
+                          "color": "#8fdbed"
+                        }
+                      ],
+                      "name": [
+                        {
+                          "font-size": "calc(15px * var(--va-clock-shortcut-scale, 1))"
+                        },
+                        {
+                          "font-weight": 450
+                        },
+                        {
+                          "color": "#e2edf5"
+                        },
+                        {
+                          "white-space": "normal"
+                        }
+                      ]
+                    },
+                    "name": "Home",
+                    "icon": "mdi:home-outline",
+                    "tap_action": {
+                      "action": "navigate",
+                      "navigation_path": "/athena-home/home"
+                    }
+                  },
+                  {
+                    "type": "custom:button-card",
+                    "show_name": true,
+                    "show_icon": true,
+                    "hold_action": {
+                      "action": "none"
+                    },
+                    "double_tap_action": {
+                      "action": "none"
+                    },
+                    "styles": {
+                      "grid": [
+                        {
+                          "grid-template-areas": "\"i\" \"n\""
+                        },
+                        {
+                          "grid-template-columns": "1fr"
+                        },
+                        {
+                          "grid-template-rows": "1fr auto"
+                        },
+                        {
+                          "row-gap": "calc(7px * var(--va-clock-shortcut-scale, 1))"
+                        }
+                      ],
+                      "card": [
+                        {
+                          "background": "#bedef00d"
+                        },
+                        {
+                          "border": "1px solid #bedef035"
+                        },
+                        {
+                          "border-radius": "calc(22px * var(--va-clock-shortcut-scale, 1))"
+                        },
+                        {
+                          "padding": "calc(12px * var(--va-clock-shortcut-scale, 1)) calc(16px * var(--va-clock-shortcut-scale, 1))"
+                        },
+                        {
+                          "width": "calc(96px * var(--va-clock-shortcut-scale, 1))"
+                        },
+                        {
+                          "height": "calc(88px * var(--va-clock-shortcut-scale, 1))"
+                        },
+                        {
+                          "box-shadow": "none"
+                        },
+                        {
+                          "font-family": "Inter,Roboto,system-ui,sans-serif"
+                        }
+                      ],
+                      "icon": [
+                        {
+                          "width": "calc(34px * var(--va-clock-shortcut-scale, 1))"
+                        },
+                        {
+                          "color": "#8fdbed"
+                        }
+                      ],
+                      "name": [
+                        {
+                          "font-size": "calc(15px * var(--va-clock-shortcut-scale, 1))"
+                        },
+                        {
+                          "font-weight": 450
+                        },
+                        {
+                          "color": "#e2edf5"
+                        },
+                        {
+                          "white-space": "normal"
+                        }
+                      ]
+                    },
+                    "name": "TV",
+                    "icon": "mdi:television-classic",
+                    "tap_action": {
+                      "action": "navigate",
+                      "navigation_path": "/athena-tv/tv"
+                    }
+                  }
+                ]
+              }
+            },
+            "face": "[[[\nconst isNight = states[variables.var_assistsat_entity]?.attributes?.mode === 'night';\nreturn `<div class=\"clock-face\"><div class=\"clock-time\" style=\"color:${isNight ? '#a52b2b' : '#f1f5f9'}\">${variables.var_current_time}</div>${isNight ? '' : '<div class=\"clock-date\">' + variables.var_date_long + '</div>'}</div>`;\n]]]",
+            "weather": {
+              "card": {
+                "type": "custom:button-card",
+                "show_name": false,
+                "show_icon": false,
+                "show_state": false,
+                "tap_action": {
+                  "action": "call-service",
+                  "service": "view_assist.navigate",
+                  "service_data": {
+                    "device": "[[[ return variables.var_assistsat_entity; ]]]",
+                    "path": "[[[ return `${variables.var_dashboard}/weather`; ]]]"
+                  }
+                },
+                "hold_action": {
+                  "action": "none"
+                },
+                "double_tap_action": {
+                  "action": "none"
+                },
+                "styles": {
+                  "grid": [
+                    {
+                      "grid-template-areas": "\"summary\""
+                    },
+                    {
+                      "grid-template-columns": "minmax(0, 1fr)"
+                    }
+                  ],
+                  "card": [
+                    {
+                      "background": "#bedef009"
+                    },
+                    {
+                      "border": "1px solid #bedef01c"
+                    },
+                    {
+                      "border-radius": "22px"
+                    },
+                    {
+                      "box-shadow": "none"
+                    },
+                    {
+                      "padding": "clamp(16px, 2.3cqw, 40px)"
+                    }
+                  ],
+                  "custom_fields": {
+                    "summary": [
+                      {
+                        "white-space": "normal"
+                      },
+                      {
+                        "min-width": 0
+                      }
+                    ]
+                  }
+                },
+                "extra_styles": "\n  .clock-face { height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:clamp(10px,2cqh,30px); }\n  .clock-time { font-size:clamp(48px,min(25cqw,42cqh),480px); font-weight:250; letter-spacing:-.055em; line-height:1.05; font-variant-numeric:tabular-nums; white-space:nowrap; }\n  .clock-date { color:#a5b9cf; font-size:clamp(17px,min(2.5cqw,4cqh),48px); font-weight:400; letter-spacing:.015em; }\n  .clock-kicker { display:flex; align-items:center; gap:12px; color:#a5b9cf; font-size:clamp(12px,1.1cqw,22px); letter-spacing:.2em; font-weight:500; }\n  .clock-dot { width:7px; height:7px; border-radius:50%; background:#8fdbed; box-shadow:0 0 18px #8fdbed55; }\n  .clock-weather { display:flex; align-items:center; gap:clamp(14px,2cqw,38px); text-align:left; min-width:0; }\n  .clock-weather ha-icon { color:#8fdbed; --mdc-icon-size:clamp(38px,min(5cqw,9cqh),90px); flex-shrink:0; }\n  .clock-current { flex:1; min-width:0; }\n  .clock-temp { color:#f1f5f9; font-size:clamp(25px,min(3.6cqw,6.5cqh),66px); line-height:1.15; font-weight:350; }\n  .clock-condition { color:#a5b9cf; font-size:clamp(12px,min(1.3cqw,2.5cqh),26px); margin-top:5px; white-space:normal; }\n  .clock-metric { min-width:clamp(60px,9cqw,180px); padding-left:clamp(14px,2.8cqw,50px); border-left:1px solid #ffffff15; }\n  .clock-metric-label { color:#a5b9cf; font-size:clamp(10px,1cqw,19px); margin-bottom:7px; }\n  .clock-metric-value { color:#e2edf5; font-size:clamp(16px,1.8cqw,34px); font-weight:400; }\n  .clock-link { color:#8fdbed; font-size:clamp(16px,2cqw,32px); padding-left:10px; }\n  @container (max-width:600px) { .clock-weather { flex-wrap:wrap; gap:16px; } .clock-metric { flex:1; border:0; padding:14px 0 0; border-top:1px solid #ffffff15; } .clock-metric-label { font-size:12px; } .clock-metric-value { font-size:20px; } .clock-current { flex-basis:60%; } .clock-link { display:none; } .clock-date { font-size:clamp(16px,4cqw,24px); } .clock-time { font-size:32cqw; } }\n",
+                "custom_fields": {
+                  "summary": "[[[\n\nconst va = states[variables.var_assistsat_entity]?.attributes || {};\nconst weatherState = states[va.weather_entity || 'weather.home'];\nconst attrs = weatherState?.attributes || {};\nconst available = weatherState && !['unknown','unavailable'].includes(weatherState.state);\nconst esc = s => String(s).replace(/[&<>\"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',\"'\":'&#39;'}[c]));\nconst number = v => v !== null && v !== undefined && v !== '' && Number.isFinite(Number(v));\nconst value = (v, unit) => available && number(v) ? esc(Number(v).toLocaleString(undefined, {maximumFractionDigits:1})) + esc(unit) : '\u2014';\nconst labels = {sunny:'Sunny', 'clear-night':'Clear night', partlycloudy:'Partly cloudy', cloudy:'Cloudy', rainy:'Rainy', pouring:'Heavy rain', snowy:'Snowy', 'snowy-rainy':'Sleet', lightning:'Thunderstorms', 'lightning-rainy':'Thundery rain', windy:'Windy', 'windy-variant':'Windy', fog:'Foggy', hail:'Hail', exceptional:'Exceptional weather'};\nconst condition = available ? (labels[weatherState.state] || weatherState.state.replace(/[-_]/g,' ')) : 'Weather unavailable';\nconst icon = available ? (variables.var_weather_icon || 'mdi:weather-cloudy') : 'mdi:weather-cloudy-alert';\nreturn `<div class=\"clock-weather\"><ha-icon icon=\"${esc(icon)}\"></ha-icon><div class=\"clock-current\"><div class=\"clock-temp\">${value(attrs.temperature, attrs.temperature_unit || '\u00b0')}</div><div class=\"clock-condition\">${esc(condition)} \u00b7 View forecast</div></div><div class=\"clock-metric\"><div class=\"clock-metric-label\">WIND</div><div class=\"clock-metric-value\">${value(attrs.wind_speed, attrs.wind_speed_unit ? ' ' + attrs.wind_speed_unit : '')}</div></div><div class=\"clock-metric\"><div class=\"clock-metric-label\">HUMIDITY</div><div class=\"clock-metric-value\">${value(attrs.humidity, '%')}</div></div><span class=\"clock-link\" aria-hidden=\"true\">\u2197</span></div>`;\n\n]]]"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "panel",
+      "title": "Weather",
+      "path": "weather",
+      "cards": [
+        {
+          "type": "vertical-stack",
+          "cards": [
+            {
+              "type": "horizontal-stack",
+              "cards": [
+                {
+                  "type": "custom:button-card",
+                  "show_name": true,
+                  "show_icon": true,
+                  "hold_action": {
+                    "action": "none"
+                  },
+                  "double_tap_action": {
+                    "action": "none"
+                  },
+                  "styles": {
+                    "grid": [
+                      {
+                        "grid-template-areas": "\"i\" \"n\""
+                      },
+                      {
+                        "grid-template-columns": "1fr"
+                      },
+                      {
+                        "grid-template-rows": "1fr auto"
+                      },
+                      {
+                        "row-gap": "calc(7px * var(--va-clock-shortcut-scale, 1))"
+                      }
+                    ],
+                    "card": [
+                      {
+                        "background": "#bedef00d"
+                      },
+                      {
+                        "border": "1px solid #bedef035"
+                      },
+                      {
+                        "border-radius": "calc(22px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "padding": "calc(12px * var(--va-clock-shortcut-scale, 1)) calc(16px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "width": "calc(96px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "height": "calc(88px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "box-shadow": "none"
+                      },
+                      {
+                        "font-family": "Inter,Roboto,system-ui,sans-serif"
+                      }
+                    ],
+                    "icon": [
+                      {
+                        "width": "calc(34px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "color": "#8fdbed"
+                      }
+                    ],
+                    "name": [
+                      {
+                        "font-size": "calc(15px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "font-weight": 450
+                      },
+                      {
+                        "color": "#e2edf5"
+                      },
+                      {
+                        "white-space": "normal"
+                      }
+                    ]
+                  },
+                  "name": "Home",
+                  "icon": "mdi:home-outline",
+                  "tap_action": {
+                    "action": "navigate",
+                    "navigation_path": "/athena-home/home"
+                  }
+                },
+                {
+                  "type": "custom:button-card",
+                  "show_name": true,
+                  "show_icon": true,
+                  "hold_action": {
+                    "action": "none"
+                  },
+                  "double_tap_action": {
+                    "action": "none"
+                  },
+                  "styles": {
+                    "grid": [
+                      {
+                        "grid-template-areas": "\"i\" \"n\""
+                      },
+                      {
+                        "grid-template-columns": "1fr"
+                      },
+                      {
+                        "grid-template-rows": "1fr auto"
+                      },
+                      {
+                        "row-gap": "calc(7px * var(--va-clock-shortcut-scale, 1))"
+                      }
+                    ],
+                    "card": [
+                      {
+                        "background": "#bedef00d"
+                      },
+                      {
+                        "border": "1px solid #bedef035"
+                      },
+                      {
+                        "border-radius": "calc(22px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "padding": "calc(12px * var(--va-clock-shortcut-scale, 1)) calc(16px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "width": "calc(96px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "height": "calc(88px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "box-shadow": "none"
+                      },
+                      {
+                        "font-family": "Inter,Roboto,system-ui,sans-serif"
+                      }
+                    ],
+                    "icon": [
+                      {
+                        "width": "calc(34px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "color": "#8fdbed"
+                      }
+                    ],
+                    "name": [
+                      {
+                        "font-size": "calc(15px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "font-weight": 450
+                      },
+                      {
+                        "color": "#e2edf5"
+                      },
+                      {
+                        "white-space": "normal"
+                      }
+                    ]
+                  },
+                  "name": "TV",
+                  "icon": "mdi:television-classic",
+                  "tap_action": {
+                    "action": "navigate",
+                    "navigation_path": "/athena-tv/tv"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "custom:button-card",
+              "template": [
+                "variable_template",
+                "body_template"
+              ],
+              "triggers_update": "all",
+              "variables": {
+                "var_assistsat_entity_responsive_status_icons_size": "clamp(36px, 4vw, 58px)",
+                "var_weather_entity": "[[[ return states[variables.var_assistsat_entity]?.attributes?.weather_entity || 'weather.home'; ]]]"
+              },
+              "tap_action": {
+                "action": "none"
+              },
+              "double_tap_action": {
+                "action": "none"
+              },
+              "hold_action": {
+                "action": "none"
+              },
+              "styles": {
+                "grid": [
+                  {
+                    "grid-template-areas": "\"weather\""
+                  },
+                  {
+                    "grid-template-columns": "100%"
+                  },
+                  {
+                    "grid-template-rows": "100%"
+                  }
+                ],
+                "card": [
+                  {
+                    "padding": 0
+                  },
+                  {
+                    "border": "none"
+                  },
+                  {
+                    "background": "#101e30"
+                  }
+                ],
+                "custom_fields": {
+                  "title": [
+                    {
+                      "display": "none"
+                    }
+                  ],
+                  "weather": [
+                    {
+                      "position": "absolute"
+                    },
+                    {
+                      "inset": 0
+                    },
+                    {
+                      "width": "100%"
+                    },
+                    {
+                      "height": "100%"
+                    },
+                    {
+                      "text-align": "left"
+                    },
+                    {
+                      "white-space": "normal"
+                    },
+                    {
+                      "pointer-events": "auto"
+                    }
+                  ],
+                  "status": [
+                    {
+                      "top": "clamp(20px, 3vw, 80px)"
+                    },
+                    {
+                      "right": "clamp(20px, 3vw, 80px)"
+                    },
+                    {
+                      "z-index": 5
+                    }
+                  ]
+                }
+              },
+              "custom_fields": {
+                "title": "",
+                "weather": {
+                  "card": {
+                    "type": "custom:view-assist-weather-card",
+                    "entity": "[[[ return variables.var_weather_entity; ]]]",
+                    "forecast_type": "daily",
+                    "days": 5,
+                    "controls_space": "clamp(100px, 11vw, 150px)"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Alarm",
+      "path": "alarm",
+      "type": "panel",
+      "cards": [
+        {
+          "type": "vertical-stack",
+          "cards": [
+            {
+              "type": "horizontal-stack",
+              "cards": [
+                {
+                  "type": "custom:button-card",
+                  "show_name": true,
+                  "show_icon": true,
+                  "hold_action": {
+                    "action": "none"
+                  },
+                  "double_tap_action": {
+                    "action": "none"
+                  },
+                  "styles": {
+                    "grid": [
+                      {
+                        "grid-template-areas": "\"i\" \"n\""
+                      },
+                      {
+                        "grid-template-columns": "1fr"
+                      },
+                      {
+                        "grid-template-rows": "1fr auto"
+                      },
+                      {
+                        "row-gap": "calc(7px * var(--va-clock-shortcut-scale, 1))"
+                      }
+                    ],
+                    "card": [
+                      {
+                        "background": "#bedef00d"
+                      },
+                      {
+                        "border": "1px solid #bedef035"
+                      },
+                      {
+                        "border-radius": "calc(22px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "padding": "calc(12px * var(--va-clock-shortcut-scale, 1)) calc(16px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "width": "calc(96px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "height": "calc(88px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "box-shadow": "none"
+                      },
+                      {
+                        "font-family": "Inter,Roboto,system-ui,sans-serif"
+                      }
+                    ],
+                    "icon": [
+                      {
+                        "width": "calc(34px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "color": "#8fdbed"
+                      }
+                    ],
+                    "name": [
+                      {
+                        "font-size": "calc(15px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "font-weight": 450
+                      },
+                      {
+                        "color": "#e2edf5"
+                      },
+                      {
+                        "white-space": "normal"
+                      }
+                    ]
+                  },
+                  "name": "Home",
+                  "icon": "mdi:home-outline",
+                  "tap_action": {
+                    "action": "navigate",
+                    "navigation_path": "/athena-home/home"
+                  }
+                },
+                {
+                  "type": "custom:button-card",
+                  "show_name": true,
+                  "show_icon": true,
+                  "hold_action": {
+                    "action": "none"
+                  },
+                  "double_tap_action": {
+                    "action": "none"
+                  },
+                  "styles": {
+                    "grid": [
+                      {
+                        "grid-template-areas": "\"i\" \"n\""
+                      },
+                      {
+                        "grid-template-columns": "1fr"
+                      },
+                      {
+                        "grid-template-rows": "1fr auto"
+                      },
+                      {
+                        "row-gap": "calc(7px * var(--va-clock-shortcut-scale, 1))"
+                      }
+                    ],
+                    "card": [
+                      {
+                        "background": "#bedef00d"
+                      },
+                      {
+                        "border": "1px solid #bedef035"
+                      },
+                      {
+                        "border-radius": "calc(22px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "padding": "calc(12px * var(--va-clock-shortcut-scale, 1)) calc(16px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "width": "calc(96px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "height": "calc(88px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "box-shadow": "none"
+                      },
+                      {
+                        "font-family": "Inter,Roboto,system-ui,sans-serif"
+                      }
+                    ],
+                    "icon": [
+                      {
+                        "width": "calc(34px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "color": "#8fdbed"
+                      }
+                    ],
+                    "name": [
+                      {
+                        "font-size": "calc(15px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "font-weight": 450
+                      },
+                      {
+                        "color": "#e2edf5"
+                      },
+                      {
+                        "white-space": "normal"
+                      }
+                    ]
+                  },
+                  "name": "TV",
+                  "icon": "mdi:television-classic",
+                  "tap_action": {
+                    "action": "navigate",
+                    "navigation_path": "/athena-tv/tv"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "custom:button-card",
+              "variables": {
+                "alarmcardversion": "1.1.0",
+                "var_background": "[[[ try {if (variables.var_assistsat_entity && hass.states[variables.var_assistsat_entity].attributes.mode === \"night\") return \"\"; else return hass.states[variables.var_assistsat_entity].attributes.background} catch {return \"\"}]]]"
+              },
+              "template": [
+                "variable_template",
+                "body_template"
+              ],
+              "styles": {
+                "grid": [
+                  {
+                    "grid-template-areas": "\"title status\"\n\"timers timers\"\n\"assist assist\"\n"
+                  },
+                  {
+                    "grid-template-rows": "15vh max-content 10vh"
+                  },
+                  {
+                    "grid-template-columns": "1fr 1fr"
+                  }
+                ],
+                "card": [
+                  {
+                    "background": "[[[ \n  return `center / cover no-repeat url(${variables.var_background})`;\n]]]"
+                  },
+                  {
+                    "background-size": "cover"
+                  },
+                  {
+                    "background-color": "#24292c"
+                  }
+                ],
+                "custom_fields": {
+                  "title": [
+                    {
+                      "padding": "10px 0"
+                    }
+                  ],
+                  "timers": [
+                    {
+                      "justify-items": "center"
+                    },
+                    {
+                      "overflow-y": "[[[ return viewassist.config.timers.length > 1 ? 'scroll' : 'hidden' ]]]"
+                    },
+                    {
+                      "max-height": "75vh"
+                    }
+                  ],
+                  "shader": [
+                    {
+                      "position": "absolute"
+                    },
+                    {
+                      "top": 0
+                    },
+                    {
+                      "height": "100%"
+                    },
+                    {
+                      "width": "100%"
+                    },
+                    {
+                      "background-color": "rgba(0,0,0,0.15)"
+                    }
+                  ]
+                }
+              },
+              "custom_fields": {
+                "title": "Timers & Alarms",
+                "shader": "",
+                "timers": {
+                  "card": "[[[ return viewassist.helpers.timerCards() ]]]"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Alert",
+      "path": "alert",
+      "type": "panel",
+      "cards": [
+        {
+          "type": "vertical-stack",
+          "cards": [
+            {
+              "type": "horizontal-stack",
+              "cards": [
+                {
+                  "type": "custom:button-card",
+                  "show_name": true,
+                  "show_icon": true,
+                  "hold_action": {
+                    "action": "none"
+                  },
+                  "double_tap_action": {
+                    "action": "none"
+                  },
+                  "styles": {
+                    "grid": [
+                      {
+                        "grid-template-areas": "\"i\" \"n\""
+                      },
+                      {
+                        "grid-template-columns": "1fr"
+                      },
+                      {
+                        "grid-template-rows": "1fr auto"
+                      },
+                      {
+                        "row-gap": "calc(7px * var(--va-clock-shortcut-scale, 1))"
+                      }
+                    ],
+                    "card": [
+                      {
+                        "background": "#bedef00d"
+                      },
+                      {
+                        "border": "1px solid #bedef035"
+                      },
+                      {
+                        "border-radius": "calc(22px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "padding": "calc(12px * var(--va-clock-shortcut-scale, 1)) calc(16px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "width": "calc(96px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "height": "calc(88px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "box-shadow": "none"
+                      },
+                      {
+                        "font-family": "Inter,Roboto,system-ui,sans-serif"
+                      }
+                    ],
+                    "icon": [
+                      {
+                        "width": "calc(34px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "color": "#8fdbed"
+                      }
+                    ],
+                    "name": [
+                      {
+                        "font-size": "calc(15px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "font-weight": 450
+                      },
+                      {
+                        "color": "#e2edf5"
+                      },
+                      {
+                        "white-space": "normal"
+                      }
+                    ]
+                  },
+                  "name": "Home",
+                  "icon": "mdi:home-outline",
+                  "tap_action": {
+                    "action": "navigate",
+                    "navigation_path": "/athena-home/home"
+                  }
+                },
+                {
+                  "type": "custom:button-card",
+                  "show_name": true,
+                  "show_icon": true,
+                  "hold_action": {
+                    "action": "none"
+                  },
+                  "double_tap_action": {
+                    "action": "none"
+                  },
+                  "styles": {
+                    "grid": [
+                      {
+                        "grid-template-areas": "\"i\" \"n\""
+                      },
+                      {
+                        "grid-template-columns": "1fr"
+                      },
+                      {
+                        "grid-template-rows": "1fr auto"
+                      },
+                      {
+                        "row-gap": "calc(7px * var(--va-clock-shortcut-scale, 1))"
+                      }
+                    ],
+                    "card": [
+                      {
+                        "background": "#bedef00d"
+                      },
+                      {
+                        "border": "1px solid #bedef035"
+                      },
+                      {
+                        "border-radius": "calc(22px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "padding": "calc(12px * var(--va-clock-shortcut-scale, 1)) calc(16px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "width": "calc(96px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "height": "calc(88px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "box-shadow": "none"
+                      },
+                      {
+                        "font-family": "Inter,Roboto,system-ui,sans-serif"
+                      }
+                    ],
+                    "icon": [
+                      {
+                        "width": "calc(34px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "color": "#8fdbed"
+                      }
+                    ],
+                    "name": [
+                      {
+                        "font-size": "calc(15px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "font-weight": 450
+                      },
+                      {
+                        "color": "#e2edf5"
+                      },
+                      {
+                        "white-space": "normal"
+                      }
+                    ]
+                  },
+                  "name": "TV",
+                  "icon": "mdi:television-classic",
+                  "tap_action": {
+                    "action": "navigate",
+                    "navigation_path": "/athena-tv/tv"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "custom:button-card",
+              "variables": {
+                "alertcardversion": "1.0.0",
+                "var_icon": "[[[ try {return hass.states[variables.var_assistsat_entity].attributes.alert_data['icon']} catch { return  \"mdi:cancel\"}]]]  ",
+                "var_header": "[[[ try {return hass.states[variables.var_assistsat_entity].attributes.alert_data['header']} catch { return  \"Undefined\"}]]]",
+                "var_line1": "[[[ try {return hass.states[variables.var_assistsat_entity].attributes.alert_data['line1']} catch { return  \"Something went wrong\"}]]]",
+                "var_line2": "[[[ try {return hass.states[variables.var_assistsat_entity].attributes.alert_data['line2']} catch { return  \"Check your settings\"}]]]        "
+              },
+              "template": [
+                "variable_template",
+                "body_template"
+              ],
+              "styles": {
+                "grid": [
+                  {
+                    "grid-template-areas": "\"title status\"  \n\"alert alert\"\n\"assist assist\"       \n"
+                  },
+                  {
+                    "grid-template-columns": "1.5fr 1.5fr"
+                  },
+                  {
+                    "grid-template-rows": "min-content max-content"
+                  }
+                ],
+                "card": [
+                  {
+                    "background-color": "#059bf1"
+                  },
+                  {
+                    "background-size": "cover"
+                  }
+                ],
+                "custom_fields": {
+                  "title": [
+                    {
+                      "font-size": "6vh"
+                    },
+                    {
+                      "font-family": "Anton"
+                    }
+                  ],
+                  "status": [
+                    {
+                      "font-size": "5vh"
+                    },
+                    {
+                      "color": "black"
+                    },
+                    {
+                      "icon": [
+                        {
+                          "color": "black"
+                        },
+                        {
+                          "height": "90%"
+                        }
+                      ]
+                    }
+                  ],
+                  "alert": [
+                    {
+                      "align-self": "center"
+                    },
+                    {
+                      "justify-self": "center"
+                    },
+                    {
+                      "position": "absolute"
+                    },
+                    {
+                      "z-index": 2
+                    },
+                    {
+                      "width": "90%"
+                    }
+                  ]
+                }
+              },
+              "custom_fields": {
+                "alert": {
+                  "card": {
+                    "type": "custom:button-card",
+                    "custom_fields": {
+                      "header": "[[[ return variables.var_header ]]]",
+                      "line1": "[[[ return variables.var_line1 ]]]",
+                      "line2": "[[[ return variables.var_line2 ]]]",
+                      "icon": "[[[ return `<ha-icon icon=\"${variables.var_icon}\"></ha-icon>`; ]]]\n"
+                    },
+                    "show_icon": false,
+                    "show_name": false,
+                    "styles": {
+                      "grid": [
+                        {
+                          "grid-template-areas": "\"icon header\" \n\"icon line1\"\n\"icon line2\"\n"
+                        },
+                        {
+                          "grid-template-columns": ".5fr 1fr"
+                        },
+                        {
+                          "grid-template-rows": "max-content max-content max-content"
+                        }
+                      ],
+                      "card": [
+                        {
+                          "justify-content": "center"
+                        },
+                        {
+                          "align-items": "center"
+                        },
+                        {
+                          "padding": "2%"
+                        },
+                        {
+                          "border-radius": "1vw"
+                        },
+                        {
+                          "background-color": "#059bf1"
+                        },
+                        {
+                          "background-size": "cover"
+                        },
+                        {
+                          "border": "none"
+                        }
+                      ],
+                      "custom_fields": {
+                        "icon": [
+                          {
+                            "align-self": "center"
+                          },
+                          {
+                            "justify-self": "end"
+                          },
+                          {
+                            "z-index": 2
+                          },
+                          {
+                            "border-right": "2px solid black"
+                          },
+                          {
+                            "padding-right": "5%"
+                          },
+                          {
+                            "color": "black"
+                          }
+                        ],
+                        "header": [
+                          {
+                            "font-size": "7vh"
+                          },
+                          {
+                            "color": "black"
+                          },
+                          {
+                            "justify-self": "start"
+                          },
+                          {
+                            "padding-left": "10%"
+                          },
+                          {
+                            "font-weight": 500
+                          },
+                          {
+                            "padding-top": "2em"
+                          }
+                        ],
+                        "line1": [
+                          {
+                            "font-size": "7vh"
+                          },
+                          {
+                            "color": "black"
+                          },
+                          {
+                            "justify-self": "start"
+                          },
+                          {
+                            "padding-left": "10%"
+                          },
+                          {
+                            "padding-left": "10%"
+                          }
+                        ],
+                        "line2": [
+                          {
+                            "font-size": "7vh"
+                          },
+                          {
+                            "color": "black"
+                          },
+                          {
+                            "justify-self": "start"
+                          },
+                          {
+                            "padding-left": "10%"
+                          },
+                          {
+                            "padding-bottom": "2em"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Calendar",
+      "path": "calendar",
+      "type": "panel",
+      "cards": [
+        {
+          "type": "vertical-stack",
+          "cards": [
+            {
+              "type": "horizontal-stack",
+              "cards": [
+                {
+                  "type": "custom:button-card",
+                  "show_name": true,
+                  "show_icon": true,
+                  "hold_action": {
+                    "action": "none"
+                  },
+                  "double_tap_action": {
+                    "action": "none"
+                  },
+                  "styles": {
+                    "grid": [
+                      {
+                        "grid-template-areas": "\"i\" \"n\""
+                      },
+                      {
+                        "grid-template-columns": "1fr"
+                      },
+                      {
+                        "grid-template-rows": "1fr auto"
+                      },
+                      {
+                        "row-gap": "calc(7px * var(--va-clock-shortcut-scale, 1))"
+                      }
+                    ],
+                    "card": [
+                      {
+                        "background": "#bedef00d"
+                      },
+                      {
+                        "border": "1px solid #bedef035"
+                      },
+                      {
+                        "border-radius": "calc(22px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "padding": "calc(12px * var(--va-clock-shortcut-scale, 1)) calc(16px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "width": "calc(96px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "height": "calc(88px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "box-shadow": "none"
+                      },
+                      {
+                        "font-family": "Inter,Roboto,system-ui,sans-serif"
+                      }
+                    ],
+                    "icon": [
+                      {
+                        "width": "calc(34px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "color": "#8fdbed"
+                      }
+                    ],
+                    "name": [
+                      {
+                        "font-size": "calc(15px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "font-weight": 450
+                      },
+                      {
+                        "color": "#e2edf5"
+                      },
+                      {
+                        "white-space": "normal"
+                      }
+                    ]
+                  },
+                  "name": "Home",
+                  "icon": "mdi:home-outline",
+                  "tap_action": {
+                    "action": "navigate",
+                    "navigation_path": "/athena-home/home"
+                  }
+                },
+                {
+                  "type": "custom:button-card",
+                  "show_name": true,
+                  "show_icon": true,
+                  "hold_action": {
+                    "action": "none"
+                  },
+                  "double_tap_action": {
+                    "action": "none"
+                  },
+                  "styles": {
+                    "grid": [
+                      {
+                        "grid-template-areas": "\"i\" \"n\""
+                      },
+                      {
+                        "grid-template-columns": "1fr"
+                      },
+                      {
+                        "grid-template-rows": "1fr auto"
+                      },
+                      {
+                        "row-gap": "calc(7px * var(--va-clock-shortcut-scale, 1))"
+                      }
+                    ],
+                    "card": [
+                      {
+                        "background": "#bedef00d"
+                      },
+                      {
+                        "border": "1px solid #bedef035"
+                      },
+                      {
+                        "border-radius": "calc(22px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "padding": "calc(12px * var(--va-clock-shortcut-scale, 1)) calc(16px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "width": "calc(96px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "height": "calc(88px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "box-shadow": "none"
+                      },
+                      {
+                        "font-family": "Inter,Roboto,system-ui,sans-serif"
+                      }
+                    ],
+                    "icon": [
+                      {
+                        "width": "calc(34px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "color": "#8fdbed"
+                      }
+                    ],
+                    "name": [
+                      {
+                        "font-size": "calc(15px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "font-weight": 450
+                      },
+                      {
+                        "color": "#e2edf5"
+                      },
+                      {
+                        "white-space": "normal"
+                      }
+                    ]
+                  },
+                  "name": "TV",
+                  "icon": "mdi:television-classic",
+                  "tap_action": {
+                    "action": "navigate",
+                    "navigation_path": "/athena-tv/tv"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "custom:button-card",
+              "variables": {
+                "calendarcardversion": "1.0.0",
+                "var_list": "[[[ try {return hass.states[variables.var_assistsat_entity].attributes.calendar_list} catch { return  \"\"}]]]"
+              },
+              "template": [
+                "variable_template",
+                "body_template"
+              ],
+              "styles": {
+                "card": [
+                  {
+                    "background": "[[[ return `center / cover no-repeat url(${variables.background})` ]]]"
+                  },
+                  {
+                    "background-size": "cover"
+                  }
+                ],
+                "custom_fields": {
+                  "message": [
+                    {
+                      "position": "absolute"
+                    },
+                    {
+                      "align-self": "left"
+                    },
+                    {
+                      "width": "100%"
+                    }
+                  ]
+                }
+              },
+              "custom_fields": {
+                "message": {
+                  "card": {
+                    "entities": "[[[ return variables.var_list ]]]",
+                    "days_to_show": 2,
+                    "day_spacing": "20px",
+                    "event_spacing": "8px",
+                    "today_indicator": "mdi:star",
+                    "today_indicator_size": "12px",
+                    "weekday_font_size": "28px",
+                    "day_font_size": "52px",
+                    "month_font_size": "24px",
+                    "event_font_size": "28px",
+                    "time_font_size": "24px",
+                    "time_icon_size": "24px",
+                    "location_font_size": "24px",
+                    "location_icon_size": "24px",
+                    "type": "custom:calendar-card-pro",
+                    "card_mod": {
+                      "style": "ha-card {\n  text-align: left;\n}\n"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Camera",
+      "path": "camera",
+      "type": "panel",
+      "cards": [
+        {
+          "type": "vertical-stack",
+          "cards": [
+            {
+              "type": "horizontal-stack",
+              "cards": [
+                {
+                  "type": "custom:button-card",
+                  "show_name": true,
+                  "show_icon": true,
+                  "hold_action": {
+                    "action": "none"
+                  },
+                  "double_tap_action": {
+                    "action": "none"
+                  },
+                  "styles": {
+                    "grid": [
+                      {
+                        "grid-template-areas": "\"i\" \"n\""
+                      },
+                      {
+                        "grid-template-columns": "1fr"
+                      },
+                      {
+                        "grid-template-rows": "1fr auto"
+                      },
+                      {
+                        "row-gap": "calc(7px * var(--va-clock-shortcut-scale, 1))"
+                      }
+                    ],
+                    "card": [
+                      {
+                        "background": "#bedef00d"
+                      },
+                      {
+                        "border": "1px solid #bedef035"
+                      },
+                      {
+                        "border-radius": "calc(22px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "padding": "calc(12px * var(--va-clock-shortcut-scale, 1)) calc(16px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "width": "calc(96px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "height": "calc(88px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "box-shadow": "none"
+                      },
+                      {
+                        "font-family": "Inter,Roboto,system-ui,sans-serif"
+                      }
+                    ],
+                    "icon": [
+                      {
+                        "width": "calc(34px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "color": "#8fdbed"
+                      }
+                    ],
+                    "name": [
+                      {
+                        "font-size": "calc(15px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "font-weight": 450
+                      },
+                      {
+                        "color": "#e2edf5"
+                      },
+                      {
+                        "white-space": "normal"
+                      }
+                    ]
+                  },
+                  "name": "Home",
+                  "icon": "mdi:home-outline",
+                  "tap_action": {
+                    "action": "navigate",
+                    "navigation_path": "/athena-home/home"
+                  }
+                },
+                {
+                  "type": "custom:button-card",
+                  "show_name": true,
+                  "show_icon": true,
+                  "hold_action": {
+                    "action": "none"
+                  },
+                  "double_tap_action": {
+                    "action": "none"
+                  },
+                  "styles": {
+                    "grid": [
+                      {
+                        "grid-template-areas": "\"i\" \"n\""
+                      },
+                      {
+                        "grid-template-columns": "1fr"
+                      },
+                      {
+                        "grid-template-rows": "1fr auto"
+                      },
+                      {
+                        "row-gap": "calc(7px * var(--va-clock-shortcut-scale, 1))"
+                      }
+                    ],
+                    "card": [
+                      {
+                        "background": "#bedef00d"
+                      },
+                      {
+                        "border": "1px solid #bedef035"
+                      },
+                      {
+                        "border-radius": "calc(22px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "padding": "calc(12px * var(--va-clock-shortcut-scale, 1)) calc(16px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "width": "calc(96px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "height": "calc(88px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "box-shadow": "none"
+                      },
+                      {
+                        "font-family": "Inter,Roboto,system-ui,sans-serif"
+                      }
+                    ],
+                    "icon": [
+                      {
+                        "width": "calc(34px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "color": "#8fdbed"
+                      }
+                    ],
+                    "name": [
+                      {
+                        "font-size": "calc(15px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "font-weight": 450
+                      },
+                      {
+                        "color": "#e2edf5"
+                      },
+                      {
+                        "white-space": "normal"
+                      }
+                    ]
+                  },
+                  "name": "TV",
+                  "icon": "mdi:television-classic",
+                  "tap_action": {
+                    "action": "navigate",
+                    "navigation_path": "/athena-tv/tv"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "custom:button-card",
+              "variables": {
+                "cameracardversion": "2.1.1",
+                "var_url_params": "[[[\n  let queryString = '';\n  const vaEntity = hass.states[variables.var_assistsat_entity];\n\n  if (vaEntity?.attributes?.current_path) {\n    const currentPath = vaEntity.attributes.current_path;\n    queryString = currentPath.includes('?') ? currentPath.split('?')[1] : '';\n  }\n\n  if (!queryString && window.location.search) {\n    queryString = window.location.search.substring(1);\n  }\n\n  return new URLSearchParams(queryString);\n]]]",
+                "var_camera": "[[[\n  const urlParams = variables.var_url_params;\n  const urlCamera = urlParams.get('camera');\n  const showAll = urlParams.get('show');\n\n  if (showAll === 'all' || showAll === 'configured') {\n    return \"\";\n  }\n\n  if (urlCamera) {\n    return urlCamera;\n  }\n\n  const availableCameras = [];\n  const cameraKeys = Object.keys(hass.states).filter(id => id.startsWith('camera.'));\n\n  for (let i = 0; i < cameraKeys.length; i++) {\n    const entityId = cameraKeys[i];\n    const state = hass.states[entityId].state;\n    if (state !== 'unavailable' && state !== 'unknown') {\n      availableCameras.push(entityId);\n    }\n  }\n\n  if (availableCameras.length === 1) {\n    return availableCameras[0];\n  }\n\n  return \"\";\n]]]",
+                "var_all_cameras": "[[[\n  const formatCameraName = (entityId) => {\n    return entityId.replace('camera.', '').replace(/_/g, ' ');\n  };\n\n  const isCameraAvailable = (state) => {\n    return state !== 'unavailable' && state !== 'unknown';\n  };\n\n  const urlParams = variables.var_url_params;\n  const showType = urlParams.get('show');\n  const configuredCameras = urlParams.get('cameras');\n  \n  if (showType === 'configured' && configuredCameras) {\n    const cameras = [];\n    const cameraEntityList = decodeURIComponent(configuredCameras).split(',');\n    \n    for (let i = 0; i < cameraEntityList.length; i++) {\n      const entityId = cameraEntityList[i].trim();\n      const entity = hass.states[entityId];\n      if (entity && isCameraAvailable(entity.state)) {\n        cameras.push({\n          entity_id: entityId,\n          name: entity.attributes.friendly_name || formatCameraName(entityId)\n        });\n      }\n    }\n    return cameras;\n  }\n\n  const viewAssistEntity = variables.var_assistsat_entity;\n\n  if (viewAssistEntity && hass.states[viewAssistEntity]) {\n    const cameraList = hass.states[viewAssistEntity].attributes.camera_list;\n\n    if (Array.isArray(cameraList)) {\n      const cameras = [];\n\n      for (let i = 0; i < cameraList.length; i++) {\n        const entityId = cameraList[i];\n        const entity = hass.states[entityId];\n        if (entity && isCameraAvailable(entity.state)) {\n          cameras.push({\n            entity_id: entityId,\n            name: entity.attributes.friendly_name || formatCameraName(entityId)\n          });\n        }\n      }\n\n      if (cameras.length > 0) {\n        return cameras;\n      }\n    }\n  }\n\n  const cameras = [];\n  const cameraKeys = Object.keys(hass.states).filter(id => id.startsWith('camera.'));\n\n  for (let i = 0; i < cameraKeys.length; i++) {\n    const entityId = cameraKeys[i];\n    const entity = hass.states[entityId];\n    if (isCameraAvailable(entity.state)) {\n      cameras.push({\n        entity_id: entityId,\n        name: entity.attributes.friendly_name || formatCameraName(entityId)\n      });\n    }\n  }\n\n  cameras.sort((a, b) => a.name.localeCompare(b.name));\n  return cameras;\n]]]",
+                "var_responsive_columns": "[[[\n  return window.viewAssistResponsive?.orientation === \"portrait\" ? 1 : 2;\n]]]",
+                "var_timeout_seconds": "[[[\n  const timeout = variables.var_url_params.get('timeout');\n  return timeout ? parseInt(timeout, 10) : 0;\n]]]",
+                "var_setup_camera_hold_mode": "[[[\n  const cleanup = () => {\n    if (window.vaCameraHoldTimeout) {\n      clearTimeout(window.vaCameraHoldTimeout);\n    }\n    window.vaCameraHoldTimeout = null;\n    window.vaCameraHoldModeSet = false;\n    window.vaCameraPageKey = null;\n    window.vaCameraTimeoutStart = null;\n    window.vaCameraStoredPreviousMode = null;\n    window.vaCameraRevertMode = null;\n  };\n\n  if (variables.var_current_view !== 'camera' || !variables.var_assistsat_entity) {\n    cleanup();\n    return '';\n  }\n\n  const currentPageKey = `${window.location.pathname}${window.location.search}`;\n\n  if (window.vaCameraPageKey === currentPageKey && window.vaCameraHoldTimeout) {\n    return '';\n  }\n\n  window.vaCameraPageKey = currentPageKey;\n  const entityId = variables.var_assistsat_entity;\n  const vaEntity = hass.states[entityId];\n\n  const currentMode = vaEntity?.attributes?.mode || 'normal';\n  const previousMode = currentMode === 'hold' ? 'normal' : currentMode;\n  window.vaCameraStoredPreviousMode = previousMode;\n\n  hass.callService('view_assist', 'set_state', {\n    entity_id: entityId,\n    mode: 'hold'\n  });\n  window.vaCameraHoldModeSet = true;\n\n  if (window.vaCameraHoldTimeout) {\n    clearTimeout(window.vaCameraHoldTimeout);\n    window.vaCameraHoldTimeout = null;\n  }\n\n  const timeoutSeconds = variables.var_timeout_seconds;\n  if (timeoutSeconds > 0) {\n    window.vaCameraTimeoutStart = Date.now();\n\n    window.vaCameraRevertMode = function() {\n      try {\n        let hassInstance = typeof hass !== 'undefined' ? hass : \n                          document.querySelector('home-assistant')?.hass;\n\n        if (hassInstance) {\n          hassInstance.callService('view_assist', 'set_state', {\n            entity_id: entityId,\n            mode: window.vaCameraStoredPreviousMode || 'normal'\n          });\n        }\n      } catch (error) {\n        console.warn('View Assist camera mode revert failed:', error);\n      } finally {\n        cleanup();\n      }\n    };\n\n    window.vaCameraHoldTimeout = setTimeout(window.vaCameraRevertMode, timeoutSeconds * 1000);\n  }\n\n  return '';\n]]]"
+              },
+              "template": [
+                "variable_template",
+                "responsive_base",
+                "body_template"
+              ],
+              "styles": {
+                "grid": [
+                  {
+                    "grid-template-areas": "[[[\n  return variables.var_camera ? \n    `\"status status\"  \n     \"camera camera\"\n     \"camera camera\"` :\n    `\"status status\"\n     \"camera_select camera_select\"\n     \"camera_select camera_select\"`;\n]]]"
+                  },
+                  {
+                    "grid-template-columns": "1fr 1fr"
+                  },
+                  {
+                    "grid-template-rows": "min-content 1fr 1fr"
+                  }
+                ],
+                "card": [
+                  {
+                    "background": "[[[ return `center / cover no-repeat url(${variables.background})` ]]]"
+                  },
+                  {
+                    "background-size": "cover"
+                  },
+                  {
+                    "border-radius": "0px"
+                  },
+                  {
+                    "font-family": "[[[ return `'${variables.var_assistsat_entity_font_style}', sans-serif`; ]]]"
+                  }
+                ],
+                "custom_fields": {
+                  "camera": [
+                    {
+                      "display": "[[[ return variables.var_camera ? 'block' : 'none' ]]]"
+                    },
+                    {
+                      "height": "100%"
+                    },
+                    {
+                      "width": "100%"
+                    }
+                  ],
+                  "camera_select": [
+                    {
+                      "display": "[[[ return variables.var_camera ? 'none' : 'block' ]]]"
+                    },
+                    {
+                      "margin": "0.125rem"
+                    },
+                    {
+                      "overflow-y": "auto"
+                    },
+                    {
+                      "max-height": "100vh"
+                    }
+                  ],
+                  "back_button": [
+                    {
+                      "display": "[[[ return variables.var_camera ? 'block' : 'none' ]]]"
+                    },
+                    {
+                      "position": "absolute"
+                    },
+                    {
+                      "left": "1rem"
+                    },
+                    {
+                      "top": "1rem"
+                    },
+                    {
+                      "z-index": 1
+                    }
+                  ]
+                }
+              },
+              "custom_fields": {
+                "_hold_mode_init": "[[[ return variables.var_setup_camera_hold_mode ]]]",
+                "back_button": {
+                  "card": {
+                    "type": "custom:button-card",
+                    "icon": "mdi:arrow-left",
+                    "show_name": false,
+                    "styles": {
+                      "card": [
+                        {
+                          "background": "rgba(0,0,0,0.6)"
+                        },
+                        {
+                          "border-radius": "50%"
+                        },
+                        {
+                          "width": "3rem"
+                        },
+                        {
+                          "height": "3rem"
+                        },
+                        {
+                          "padding": 0
+                        }
+                      ],
+                      "icon": [
+                        {
+                          "color": "white"
+                        },
+                        {
+                          "width": "1.75rem"
+                        },
+                        {
+                          "height": "1.75rem"
+                        }
+                      ]
+                    },
+                    "grid": [
+                      {
+                        "grid-template-areas": "i"
+                      },
+                      {
+                        "justify-items": "center"
+                      },
+                      {
+                        "align-items": "center"
+                      }
+                    ],
+                    "tap_action": {
+                      "action": "call-service",
+                      "service": "view_assist.navigate",
+                      "service_data": {
+                        "device": "[[[ return variables.var_assistsat_entity ]]]",
+                        "path": "[[[ return `${variables.var_dashboard}/camera` ]]]"
+                      }
+                    }
+                  }
+                },
+                "camera": {
+                  "card": {
+                    "type": "picture-entity",
+                    "entity": "[[[ return variables.var_camera ]]]",
+                    "camera_view": "live",
+                    "fit_mode": "contain",
+                    "show_name": false,
+                    "show_state": false,
+                    "tap_action": {
+                      "action": "more-info"
+                    }
+                  }
+                },
+                "camera_select": {
+                  "card": {
+                    "type": "grid",
+                    "columns": "[[[ return variables.var_responsive_columns ]]]",
+                    "square": false,
+                    "cards": "[[[\n  const cameras = variables.var_all_cameras;\n  if (!Array.isArray(cameras) || cameras.length === 0) {\n    return [{\n      type: \"markdown\",\n      content: \"No cameras available\",\n      card_mod: {\n        style: `\n          ha-card {\n            background: rgba(0,0,0,0.6);\n            color: white;\n            padding: 2rem;\n            border-radius: 0.5rem;\n            text-align: center;\n          }\n        `\n      }\n    }];\n  }\n\n  const timeoutParam = variables.var_timeout_seconds > 0 ? `&timeout=${variables.var_timeout_seconds}` : '';\n\n  return cameras.map(camera => ({\n    type: \"picture-entity\",\n    entity: camera.entity_id,\n    name: camera.name,\n    show_state: false,\n    show_name: true,\n    camera_view: \"auto\",\n    tap_action: {\n      action: \"call-service\",\n      service: \"view_assist.navigate\",\n      service_data: {\n        device: variables.var_assistsat_entity,\n        path: `${variables.var_dashboard}/camera?camera=${camera.entity_id}${timeoutParam}`\n      }\n    },\n    card_mod: {\n      style: `\n        ha-card {\n          border-radius: 0.5rem;\n        }\n      `\n    }\n  }));\n]]]"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Info",
+      "path": "info",
+      "type": "panel",
+      "cards": [
+        {
+          "type": "vertical-stack",
+          "cards": [
+            {
+              "type": "horizontal-stack",
+              "cards": [
+                {
+                  "type": "custom:button-card",
+                  "show_name": true,
+                  "show_icon": true,
+                  "hold_action": {
+                    "action": "none"
+                  },
+                  "double_tap_action": {
+                    "action": "none"
+                  },
+                  "styles": {
+                    "grid": [
+                      {
+                        "grid-template-areas": "\"i\" \"n\""
+                      },
+                      {
+                        "grid-template-columns": "1fr"
+                      },
+                      {
+                        "grid-template-rows": "1fr auto"
+                      },
+                      {
+                        "row-gap": "calc(7px * var(--va-clock-shortcut-scale, 1))"
+                      }
+                    ],
+                    "card": [
+                      {
+                        "background": "#bedef00d"
+                      },
+                      {
+                        "border": "1px solid #bedef035"
+                      },
+                      {
+                        "border-radius": "calc(22px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "padding": "calc(12px * var(--va-clock-shortcut-scale, 1)) calc(16px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "width": "calc(96px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "height": "calc(88px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "box-shadow": "none"
+                      },
+                      {
+                        "font-family": "Inter,Roboto,system-ui,sans-serif"
+                      }
+                    ],
+                    "icon": [
+                      {
+                        "width": "calc(34px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "color": "#8fdbed"
+                      }
+                    ],
+                    "name": [
+                      {
+                        "font-size": "calc(15px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "font-weight": 450
+                      },
+                      {
+                        "color": "#e2edf5"
+                      },
+                      {
+                        "white-space": "normal"
+                      }
+                    ]
+                  },
+                  "name": "Home",
+                  "icon": "mdi:home-outline",
+                  "tap_action": {
+                    "action": "navigate",
+                    "navigation_path": "/athena-home/home"
+                  }
+                },
+                {
+                  "type": "custom:button-card",
+                  "show_name": true,
+                  "show_icon": true,
+                  "hold_action": {
+                    "action": "none"
+                  },
+                  "double_tap_action": {
+                    "action": "none"
+                  },
+                  "styles": {
+                    "grid": [
+                      {
+                        "grid-template-areas": "\"i\" \"n\""
+                      },
+                      {
+                        "grid-template-columns": "1fr"
+                      },
+                      {
+                        "grid-template-rows": "1fr auto"
+                      },
+                      {
+                        "row-gap": "calc(7px * var(--va-clock-shortcut-scale, 1))"
+                      }
+                    ],
+                    "card": [
+                      {
+                        "background": "#bedef00d"
+                      },
+                      {
+                        "border": "1px solid #bedef035"
+                      },
+                      {
+                        "border-radius": "calc(22px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "padding": "calc(12px * var(--va-clock-shortcut-scale, 1)) calc(16px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "width": "calc(96px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "height": "calc(88px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "box-shadow": "none"
+                      },
+                      {
+                        "font-family": "Inter,Roboto,system-ui,sans-serif"
+                      }
+                    ],
+                    "icon": [
+                      {
+                        "width": "calc(34px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "color": "#8fdbed"
+                      }
+                    ],
+                    "name": [
+                      {
+                        "font-size": "calc(15px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "font-weight": 450
+                      },
+                      {
+                        "color": "#e2edf5"
+                      },
+                      {
+                        "white-space": "normal"
+                      }
+                    ]
+                  },
+                  "name": "TV",
+                  "icon": "mdi:television-classic",
+                  "tap_action": {
+                    "action": "navigate",
+                    "navigation_path": "/athena-tv/tv"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "custom:button-card",
+              "variables": {
+                "background": "/local/es8-athena/dashboard/infobackground.png",
+                "infocardversion": "1.0.0"
+              },
+              "template": [
+                "variable_template",
+                "body_template"
+              ],
+              "styles": {
+                "grid": [
+                  {
+                    "grid-template-areas": "\"title status\"  \n\"message message\"\n\"assist assist\"        \n"
+                  },
+                  {
+                    "grid-template-rows": "min-content 4fr min-content"
+                  },
+                  {
+                    "grid-template-columns": "1fr 1fr"
+                  }
+                ],
+                "card": [
+                  {
+                    "background": "[[[ return `center / cover no-repeat url(${variables.background})` ]]]"
+                  },
+                  {
+                    "background-size": "cover"
+                  }
+                ],
+                "custom_fields": {
+                  "message": [
+                    {
+                      "font-size": "[[[ return variables.var_font_size ]]]"
+                    },
+                    {
+                      "position": "relative"
+                    },
+                    {
+                      "padding": "10px"
+                    },
+                    {
+                      "border-radius": "10px"
+                    },
+                    {
+                      "width": "95%"
+                    },
+                    {
+                      "text-align": "start"
+                    },
+                    {
+                      "text-wrap": "wrap"
+                    },
+                    {
+                      "justify-content": "center"
+                    },
+                    {
+                      "align-self": "center"
+                    },
+                    {
+                      "padding": "2%"
+                    }
+                  ]
+                }
+              },
+              "custom_fields": {
+                "message": "[[[ return variables.var_message ]]]"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Infopic",
+      "path": "infopic",
+      "type": "panel",
+      "cards": [
+        {
+          "type": "vertical-stack",
+          "cards": [
+            {
+              "type": "horizontal-stack",
+              "cards": [
+                {
+                  "type": "custom:button-card",
+                  "show_name": true,
+                  "show_icon": true,
+                  "hold_action": {
+                    "action": "none"
+                  },
+                  "double_tap_action": {
+                    "action": "none"
+                  },
+                  "styles": {
+                    "grid": [
+                      {
+                        "grid-template-areas": "\"i\" \"n\""
+                      },
+                      {
+                        "grid-template-columns": "1fr"
+                      },
+                      {
+                        "grid-template-rows": "1fr auto"
+                      },
+                      {
+                        "row-gap": "calc(7px * var(--va-clock-shortcut-scale, 1))"
+                      }
+                    ],
+                    "card": [
+                      {
+                        "background": "#bedef00d"
+                      },
+                      {
+                        "border": "1px solid #bedef035"
+                      },
+                      {
+                        "border-radius": "calc(22px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "padding": "calc(12px * var(--va-clock-shortcut-scale, 1)) calc(16px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "width": "calc(96px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "height": "calc(88px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "box-shadow": "none"
+                      },
+                      {
+                        "font-family": "Inter,Roboto,system-ui,sans-serif"
+                      }
+                    ],
+                    "icon": [
+                      {
+                        "width": "calc(34px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "color": "#8fdbed"
+                      }
+                    ],
+                    "name": [
+                      {
+                        "font-size": "calc(15px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "font-weight": 450
+                      },
+                      {
+                        "color": "#e2edf5"
+                      },
+                      {
+                        "white-space": "normal"
+                      }
+                    ]
+                  },
+                  "name": "Home",
+                  "icon": "mdi:home-outline",
+                  "tap_action": {
+                    "action": "navigate",
+                    "navigation_path": "/athena-home/home"
+                  }
+                },
+                {
+                  "type": "custom:button-card",
+                  "show_name": true,
+                  "show_icon": true,
+                  "hold_action": {
+                    "action": "none"
+                  },
+                  "double_tap_action": {
+                    "action": "none"
+                  },
+                  "styles": {
+                    "grid": [
+                      {
+                        "grid-template-areas": "\"i\" \"n\""
+                      },
+                      {
+                        "grid-template-columns": "1fr"
+                      },
+                      {
+                        "grid-template-rows": "1fr auto"
+                      },
+                      {
+                        "row-gap": "calc(7px * var(--va-clock-shortcut-scale, 1))"
+                      }
+                    ],
+                    "card": [
+                      {
+                        "background": "#bedef00d"
+                      },
+                      {
+                        "border": "1px solid #bedef035"
+                      },
+                      {
+                        "border-radius": "calc(22px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "padding": "calc(12px * var(--va-clock-shortcut-scale, 1)) calc(16px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "width": "calc(96px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "height": "calc(88px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "box-shadow": "none"
+                      },
+                      {
+                        "font-family": "Inter,Roboto,system-ui,sans-serif"
+                      }
+                    ],
+                    "icon": [
+                      {
+                        "width": "calc(34px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "color": "#8fdbed"
+                      }
+                    ],
+                    "name": [
+                      {
+                        "font-size": "calc(15px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "font-weight": 450
+                      },
+                      {
+                        "color": "#e2edf5"
+                      },
+                      {
+                        "white-space": "normal"
+                      }
+                    ]
+                  },
+                  "name": "TV",
+                  "icon": "mdi:television-classic",
+                  "tap_action": {
+                    "action": "navigate",
+                    "navigation_path": "/athena-tv/tv"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "custom:button-card",
+              "variables": {
+                "background": "/local/es8-athena/dashboard/infobackground.png",
+                "infopiccardversion": "1.0.0"
+              },
+              "template": [
+                "variable_template",
+                "body_template"
+              ],
+              "styles": {
+                "grid": [
+                  {
+                    "grid-template-areas": "\"title status\"  \n\"image message\"\n\"assist assist\"       \n"
+                  },
+                  {
+                    "grid-template-rows": "min-content 4fr min-content"
+                  },
+                  {
+                    "grid-template-columns": "1fr 2fr"
+                  }
+                ],
+                "card": [
+                  {
+                    "background": "[[[ return `center / cover no-repeat url(${variables.background})` ]]]"
+                  },
+                  {
+                    "background-size": "cover"
+                  }
+                ],
+                "custom_fields": {
+                  "image": [
+                    {
+                      "align-self": "center"
+                    },
+                    {
+                      "justify-self": "center"
+                    },
+                    {
+                      "object-fit": "contain"
+                    },
+                    {
+                      "width": "75%"
+                    }
+                  ],
+                  "message": [
+                    {
+                      "font-size": "[[[ return variables.var_font_size ]]]"
+                    },
+                    {
+                      "position": "relative"
+                    },
+                    {
+                      "padding": "10px"
+                    },
+                    {
+                      "border-radius": "10px"
+                    },
+                    {
+                      "width": "95%"
+                    },
+                    {
+                      "text-align": "start"
+                    },
+                    {
+                      "text-wrap": "wrap"
+                    },
+                    {
+                      "justify-content": "center"
+                    },
+                    {
+                      "align-self": "center"
+                    },
+                    {
+                      "padding": "2%"
+                    }
+                  ]
+                }
+              },
+              "custom_fields": {
+                "image": {
+                  "card": {
+                    "type": "picture",
+                    "image": "[[[ return states[variables.var_assistsat_entity].attributes.image; ]]]"
+                  }
+                },
+                "message": "[[[ return variables.var_message ]]]"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Intent",
+      "path": "intent",
+      "type": "panel",
+      "cards": [
+        {
+          "type": "vertical-stack",
+          "cards": [
+            {
+              "type": "horizontal-stack",
+              "cards": [
+                {
+                  "type": "custom:button-card",
+                  "show_name": true,
+                  "show_icon": true,
+                  "hold_action": {
+                    "action": "none"
+                  },
+                  "double_tap_action": {
+                    "action": "none"
+                  },
+                  "styles": {
+                    "grid": [
+                      {
+                        "grid-template-areas": "\"i\" \"n\""
+                      },
+                      {
+                        "grid-template-columns": "1fr"
+                      },
+                      {
+                        "grid-template-rows": "1fr auto"
+                      },
+                      {
+                        "row-gap": "calc(7px * var(--va-clock-shortcut-scale, 1))"
+                      }
+                    ],
+                    "card": [
+                      {
+                        "background": "#bedef00d"
+                      },
+                      {
+                        "border": "1px solid #bedef035"
+                      },
+                      {
+                        "border-radius": "calc(22px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "padding": "calc(12px * var(--va-clock-shortcut-scale, 1)) calc(16px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "width": "calc(96px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "height": "calc(88px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "box-shadow": "none"
+                      },
+                      {
+                        "font-family": "Inter,Roboto,system-ui,sans-serif"
+                      }
+                    ],
+                    "icon": [
+                      {
+                        "width": "calc(34px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "color": "#8fdbed"
+                      }
+                    ],
+                    "name": [
+                      {
+                        "font-size": "calc(15px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "font-weight": 450
+                      },
+                      {
+                        "color": "#e2edf5"
+                      },
+                      {
+                        "white-space": "normal"
+                      }
+                    ]
+                  },
+                  "name": "Home",
+                  "icon": "mdi:home-outline",
+                  "tap_action": {
+                    "action": "navigate",
+                    "navigation_path": "/athena-home/home"
+                  }
+                },
+                {
+                  "type": "custom:button-card",
+                  "show_name": true,
+                  "show_icon": true,
+                  "hold_action": {
+                    "action": "none"
+                  },
+                  "double_tap_action": {
+                    "action": "none"
+                  },
+                  "styles": {
+                    "grid": [
+                      {
+                        "grid-template-areas": "\"i\" \"n\""
+                      },
+                      {
+                        "grid-template-columns": "1fr"
+                      },
+                      {
+                        "grid-template-rows": "1fr auto"
+                      },
+                      {
+                        "row-gap": "calc(7px * var(--va-clock-shortcut-scale, 1))"
+                      }
+                    ],
+                    "card": [
+                      {
+                        "background": "#bedef00d"
+                      },
+                      {
+                        "border": "1px solid #bedef035"
+                      },
+                      {
+                        "border-radius": "calc(22px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "padding": "calc(12px * var(--va-clock-shortcut-scale, 1)) calc(16px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "width": "calc(96px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "height": "calc(88px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "box-shadow": "none"
+                      },
+                      {
+                        "font-family": "Inter,Roboto,system-ui,sans-serif"
+                      }
+                    ],
+                    "icon": [
+                      {
+                        "width": "calc(34px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "color": "#8fdbed"
+                      }
+                    ],
+                    "name": [
+                      {
+                        "font-size": "calc(15px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "font-weight": 450
+                      },
+                      {
+                        "color": "#e2edf5"
+                      },
+                      {
+                        "white-space": "normal"
+                      }
+                    ]
+                  },
+                  "name": "TV",
+                  "icon": "mdi:television-classic",
+                  "tap_action": {
+                    "action": "navigate",
+                    "navigation_path": "/athena-tv/tv"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "custom:button-card",
+              "variables": {
+                "intentcardversion": "1.0.1"
+              },
+              "template": [
+                "variable_template",
+                "body_template"
+              ],
+              "styles": {
+                "card": [
+                  {
+                    "background-color": "#000000"
+                  },
+                  {
+                    "border-width": "0px"
+                  },
+                  {
+                    "border-radius": "0px"
+                  }
+                ],
+                "custom_fields": {
+                  "message": [
+                    {
+                      "position": "absolute"
+                    },
+                    {
+                      "width": "100%"
+                    },
+                    {
+                      "align-self": "middle"
+                    },
+                    {
+                      "justify-self": "center"
+                    }
+                  ]
+                }
+              },
+              "custom_fields": {
+                "title": "",
+                "message": {
+                  "card": {
+                    "type": "custom:layout-card",
+                    "layout_type": "custom:masonry-layout",
+                    "layout": {
+                      "max_cols": 3
+                    },
+                    "cards": "[[[ try {return hass.states[variables.var_assistsat_entity].attributes.intent_entities} catch { return \"\"}]]]"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "List",
+      "path": "list",
+      "type": "panel",
+      "cards": [
+        {
+          "type": "vertical-stack",
+          "cards": [
+            {
+              "type": "horizontal-stack",
+              "cards": [
+                {
+                  "type": "custom:button-card",
+                  "show_name": true,
+                  "show_icon": true,
+                  "hold_action": {
+                    "action": "none"
+                  },
+                  "double_tap_action": {
+                    "action": "none"
+                  },
+                  "styles": {
+                    "grid": [
+                      {
+                        "grid-template-areas": "\"i\" \"n\""
+                      },
+                      {
+                        "grid-template-columns": "1fr"
+                      },
+                      {
+                        "grid-template-rows": "1fr auto"
+                      },
+                      {
+                        "row-gap": "calc(7px * var(--va-clock-shortcut-scale, 1))"
+                      }
+                    ],
+                    "card": [
+                      {
+                        "background": "#bedef00d"
+                      },
+                      {
+                        "border": "1px solid #bedef035"
+                      },
+                      {
+                        "border-radius": "calc(22px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "padding": "calc(12px * var(--va-clock-shortcut-scale, 1)) calc(16px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "width": "calc(96px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "height": "calc(88px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "box-shadow": "none"
+                      },
+                      {
+                        "font-family": "Inter,Roboto,system-ui,sans-serif"
+                      }
+                    ],
+                    "icon": [
+                      {
+                        "width": "calc(34px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "color": "#8fdbed"
+                      }
+                    ],
+                    "name": [
+                      {
+                        "font-size": "calc(15px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "font-weight": 450
+                      },
+                      {
+                        "color": "#e2edf5"
+                      },
+                      {
+                        "white-space": "normal"
+                      }
+                    ]
+                  },
+                  "name": "Home",
+                  "icon": "mdi:home-outline",
+                  "tap_action": {
+                    "action": "navigate",
+                    "navigation_path": "/athena-home/home"
+                  }
+                },
+                {
+                  "type": "custom:button-card",
+                  "show_name": true,
+                  "show_icon": true,
+                  "hold_action": {
+                    "action": "none"
+                  },
+                  "double_tap_action": {
+                    "action": "none"
+                  },
+                  "styles": {
+                    "grid": [
+                      {
+                        "grid-template-areas": "\"i\" \"n\""
+                      },
+                      {
+                        "grid-template-columns": "1fr"
+                      },
+                      {
+                        "grid-template-rows": "1fr auto"
+                      },
+                      {
+                        "row-gap": "calc(7px * var(--va-clock-shortcut-scale, 1))"
+                      }
+                    ],
+                    "card": [
+                      {
+                        "background": "#bedef00d"
+                      },
+                      {
+                        "border": "1px solid #bedef035"
+                      },
+                      {
+                        "border-radius": "calc(22px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "padding": "calc(12px * var(--va-clock-shortcut-scale, 1)) calc(16px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "width": "calc(96px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "height": "calc(88px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "box-shadow": "none"
+                      },
+                      {
+                        "font-family": "Inter,Roboto,system-ui,sans-serif"
+                      }
+                    ],
+                    "icon": [
+                      {
+                        "width": "calc(34px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "color": "#8fdbed"
+                      }
+                    ],
+                    "name": [
+                      {
+                        "font-size": "calc(15px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "font-weight": 450
+                      },
+                      {
+                        "color": "#e2edf5"
+                      },
+                      {
+                        "white-space": "normal"
+                      }
+                    ]
+                  },
+                  "name": "TV",
+                  "icon": "mdi:television-classic",
+                  "tap_action": {
+                    "action": "navigate",
+                    "navigation_path": "/athena-tv/tv"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "custom:button-card",
+              "variables": {
+                "listcardversion": "1.0.2",
+                "var_list": "[[[ try {return hass.states[variables.var_assistsat_entity].attributes.list} catch { return  \"todo.shopping_list\"}]]]",
+                "background": "/local/es8-athena/dashboard/infobackground.png"
+              },
+              "template": [
+                "variable_template",
+                "body_template"
+              ],
+              "styles": {
+                "card": [
+                  {
+                    "background": "[[[ return `center / cover no-repeat url(${variables.background})` ]]]"
+                  },
+                  {
+                    "background-size": "cover"
+                  }
+                ]
+              },
+              "custom_fields": {
+                "message": {
+                  "card": {
+                    "type": "todo-list",
+                    "entity": "[[[ return variables.var_list ]]]",
+                    "card_mod": {
+                      "style": {
+                        ".": "ha-card {\n  background-color: transparent;\n  box-shadow: none;\n  border: none;\n  position: absolute;\n  top: 15vh; /* Play with this value to adjust top spacing */\n  height: 80vh; /* Limit the vertical size to allow scrolling */\n  /* flex-direction: column-reverse;  <-- Enable this to auto scroll to the end of the list */\n  overflow-y: auto;\n  padding: 1rem;\n  display: flex;\n  flex-wrap: wrap;\n  align-content: flex-start;\n}\n\nha-check-list-item {\n  color: white;\n  font-size: 3vw;\n  line-height: 1.6;\n}\n\nha-card.type-todo-list div.header,\nha-card.type-todo-list .addRow,\nha-card.type-todo-list div.divider,\nha-check-list-item.editRow.completed {\n  display: none;\n}\n"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Locate",
+      "path": "locate",
+      "type": "panel",
+      "cards": [
+        {
+          "type": "vertical-stack",
+          "cards": [
+            {
+              "type": "horizontal-stack",
+              "cards": [
+                {
+                  "type": "custom:button-card",
+                  "show_name": true,
+                  "show_icon": true,
+                  "hold_action": {
+                    "action": "none"
+                  },
+                  "double_tap_action": {
+                    "action": "none"
+                  },
+                  "styles": {
+                    "grid": [
+                      {
+                        "grid-template-areas": "\"i\" \"n\""
+                      },
+                      {
+                        "grid-template-columns": "1fr"
+                      },
+                      {
+                        "grid-template-rows": "1fr auto"
+                      },
+                      {
+                        "row-gap": "calc(7px * var(--va-clock-shortcut-scale, 1))"
+                      }
+                    ],
+                    "card": [
+                      {
+                        "background": "#bedef00d"
+                      },
+                      {
+                        "border": "1px solid #bedef035"
+                      },
+                      {
+                        "border-radius": "calc(22px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "padding": "calc(12px * var(--va-clock-shortcut-scale, 1)) calc(16px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "width": "calc(96px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "height": "calc(88px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "box-shadow": "none"
+                      },
+                      {
+                        "font-family": "Inter,Roboto,system-ui,sans-serif"
+                      }
+                    ],
+                    "icon": [
+                      {
+                        "width": "calc(34px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "color": "#8fdbed"
+                      }
+                    ],
+                    "name": [
+                      {
+                        "font-size": "calc(15px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "font-weight": 450
+                      },
+                      {
+                        "color": "#e2edf5"
+                      },
+                      {
+                        "white-space": "normal"
+                      }
+                    ]
+                  },
+                  "name": "Home",
+                  "icon": "mdi:home-outline",
+                  "tap_action": {
+                    "action": "navigate",
+                    "navigation_path": "/athena-home/home"
+                  }
+                },
+                {
+                  "type": "custom:button-card",
+                  "show_name": true,
+                  "show_icon": true,
+                  "hold_action": {
+                    "action": "none"
+                  },
+                  "double_tap_action": {
+                    "action": "none"
+                  },
+                  "styles": {
+                    "grid": [
+                      {
+                        "grid-template-areas": "\"i\" \"n\""
+                      },
+                      {
+                        "grid-template-columns": "1fr"
+                      },
+                      {
+                        "grid-template-rows": "1fr auto"
+                      },
+                      {
+                        "row-gap": "calc(7px * var(--va-clock-shortcut-scale, 1))"
+                      }
+                    ],
+                    "card": [
+                      {
+                        "background": "#bedef00d"
+                      },
+                      {
+                        "border": "1px solid #bedef035"
+                      },
+                      {
+                        "border-radius": "calc(22px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "padding": "calc(12px * var(--va-clock-shortcut-scale, 1)) calc(16px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "width": "calc(96px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "height": "calc(88px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "box-shadow": "none"
+                      },
+                      {
+                        "font-family": "Inter,Roboto,system-ui,sans-serif"
+                      }
+                    ],
+                    "icon": [
+                      {
+                        "width": "calc(34px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "color": "#8fdbed"
+                      }
+                    ],
+                    "name": [
+                      {
+                        "font-size": "calc(15px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "font-weight": 450
+                      },
+                      {
+                        "color": "#e2edf5"
+                      },
+                      {
+                        "white-space": "normal"
+                      }
+                    ]
+                  },
+                  "name": "TV",
+                  "icon": "mdi:television-classic",
+                  "tap_action": {
+                    "action": "navigate",
+                    "navigation_path": "/athena-tv/tv"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "custom:button-card",
+              "variables": {
+                "locatecardversion": "1.0.1"
+              },
+              "template": [
+                "variable_template",
+                "body_template"
+              ],
+              "styles": {
+                "grid": [
+                  {
+                    "grid-template-areas": "\"title status\"  \n\"map map\"\n\"assist assist\"       \n"
+                  },
+                  {
+                    "grid-template-columns": "1.5fr 1.5fr"
+                  },
+                  {
+                    "grid-template-rows": "min-content max-content"
+                  }
+                ],
+                "card": [
+                  {
+                    "background": "black"
+                  },
+                  {
+                    "background-size": "cover"
+                  }
+                ],
+                "custom_fields": {
+                  "map": [
+                    {
+                      "align-self": "center"
+                    },
+                    {
+                      "width": "100%"
+                    },
+                    {
+                      "height": "100%"
+                    },
+                    {
+                      "position": "absolute"
+                    },
+                    {
+                      "justify-content": "center"
+                    },
+                    {
+                      "z-index": 1
+                    }
+                  ],
+                  "location": [
+                    {
+                      "align-self": "center"
+                    },
+                    {
+                      "justify-self": "center"
+                    },
+                    {
+                      "position": "absolute"
+                    },
+                    {
+                      "z-index": 2
+                    },
+                    {
+                      "top": "70vh"
+                    },
+                    {
+                      "width": "90%"
+                    }
+                  ],
+                  "hold_card": [
+                    {
+                      "align-self": "center"
+                    },
+                    {
+                      "justify-self": "center"
+                    },
+                    {
+                      "position": "absolute"
+                    },
+                    {
+                      "width": "80vw"
+                    },
+                    {
+                      "z-index": 3
+                    }
+                  ]
+                }
+              },
+              "custom_fields": {
+                "title": "[[[ return new Date().toLocaleTimeString([], { hour: \"numeric\", minute: \"2-digit\" }).toLowerCase(); ]]]  ",
+                "map": {
+                  "card": {
+                    "type": "map",
+                    "entities": [
+                      {
+                        "entity": "[[[ try {return hass.states[variables.var_assistsat_entity].attributes.locate_data['person']} catch { return \"\"}]]]"
+                      }
+                    ],
+                    "theme_mode": "[[[ try {\n  var var_map_mode = hass.states[variables.var_assistsat_entity].attributes.locate_data.map_mode;\n  return `${var_map_mode}`}\ncatch { return \"dark\"}]]]   ",
+                    "default_zoom": 15,
+                    "aspect_ratio": "1.5/1",
+                    "auto_fit": true,
+                    "fit_zones": false,
+                    "card_mod": {
+                      "style": {
+                        "ha-map $ ha-entity-marker $": ".marker {\n  color: white !important;              \n  background-color: #03a9f4 !important;\n  opacity: 80% !important;              \n  font-size: 3vw !important;\n  font-weight: bold !important;\n  height: 5vw !important;\n  width: 5vw !important;                \n }              \n",
+                        "ha-map$": ".leaflet-control-attribution {\n  visibility: hidden;\n }           \n.leaflet-control-zoom {\n  right: -11px;\n  top: 24vh;\n  transform: scale(1.8)\n }\n",
+                        "ha-icon-button$": "mwc-icon-button[title=\"Reset focus\"]{\n  --mdc-icon-size: 65px;\n  right: -10px !important;\n  position: relative !important;\n  display: flex !important\n}\n"
+                      }
+                    }
+                  }
+                },
+                "location": {
+                  "card": {
+                    "type": "custom:button-card",
+                    "custom_fields": {
+                      "location_text": "[[[ try {\n  var var_location_text = hass.states[variables.var_assistsat_entity].attributes.locate_data.location_text;\n  return `${var_location_text}`}\ncatch { return \"\"}]]]           ",
+                      "updated": "[[[ try {\n  var var_location_last_change = hass.states[variables.var_assistsat_entity].attributes.locate_data.location_last_change;\n  return `${var_location_last_change}`}\ncatch { return \"\"}]]]   "
+                    },
+                    "show_icon": false,
+                    "show_name": false,
+                    "styles": {
+                      "grid": [
+                        {
+                          "grid-template-areas": "\"location_text\" \n\"updated\"\n"
+                        },
+                        {
+                          "grid-template-columns": "1fr"
+                        },
+                        {
+                          "grid-template-rows": "1fr min-content min-content"
+                        }
+                      ],
+                      "card": [
+                        {
+                          "justify-content": "center"
+                        },
+                        {
+                          "align-items": "center"
+                        },
+                        {
+                          "padding": "2%"
+                        },
+                        {
+                          "border-radius": "1vw"
+                        },
+                        {
+                          "background-color": "grey"
+                        },
+                        {
+                          "border": "none"
+                        },
+                        {
+                          "filter": "opacity(75%)"
+                        }
+                      ],
+                      "custom_fields": {
+                        "location_text": [
+                          {
+                            "font-size": "6vh"
+                          },
+                          {
+                            "color": "black"
+                          },
+                          {
+                            "text-wrap": "wrap"
+                          },
+                          {
+                            "font-weight": "bold"
+                          },
+                          {
+                            "text-align": "center"
+                          }
+                        ],
+                        "updated": [
+                          {
+                            "font-size": "4vh"
+                          },
+                          {
+                            "color": "black"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                "hold_card": {
+                  "card": {
+                    "type": "custom:button-card",
+                    "show_icon": false,
+                    "show_name": false,
+                    "tap_action": {
+                      "action": "call-service",
+                      "service": "view_assist.set_state",
+                      "service_data": {
+                        "entity_id": "[[[ return variables.var_assistsat_entity ]]]",
+                        "mode": "hold"
+                      }
+                    },
+                    "double_tap_action": {
+                      "action": "call-service",
+                      "service": "view_assist.set_state",
+                      "service_data": {
+                        "entity_id": "[[[ return variables.var_assistsat_entity ]]]",
+                        "mode": "normal"
+                      }
+                    },
+                    "styles": {
+                      "card": [
+                        {
+                          "top": "10vh"
+                        },
+                        {
+                          "border-radius": "1vw"
+                        },
+                        {
+                          "background-color": "transparent"
+                        },
+                        {
+                          "height": "90vh"
+                        },
+                        {
+                          "width": "100vw"
+                        },
+                        {
+                          "border": "none"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Music",
+      "path": "music",
+      "type": "panel",
+      "cards": [
+        {
+          "type": "vertical-stack",
+          "cards": [
+            {
+              "type": "horizontal-stack",
+              "cards": [
+                {
+                  "type": "custom:button-card",
+                  "show_name": true,
+                  "show_icon": true,
+                  "hold_action": {
+                    "action": "none"
+                  },
+                  "double_tap_action": {
+                    "action": "none"
+                  },
+                  "styles": {
+                    "grid": [
+                      {
+                        "grid-template-areas": "\"i\" \"n\""
+                      },
+                      {
+                        "grid-template-columns": "1fr"
+                      },
+                      {
+                        "grid-template-rows": "1fr auto"
+                      },
+                      {
+                        "row-gap": "calc(7px * var(--va-clock-shortcut-scale, 1))"
+                      }
+                    ],
+                    "card": [
+                      {
+                        "background": "#bedef00d"
+                      },
+                      {
+                        "border": "1px solid #bedef035"
+                      },
+                      {
+                        "border-radius": "calc(22px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "padding": "calc(12px * var(--va-clock-shortcut-scale, 1)) calc(16px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "width": "calc(96px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "height": "calc(88px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "box-shadow": "none"
+                      },
+                      {
+                        "font-family": "Inter,Roboto,system-ui,sans-serif"
+                      }
+                    ],
+                    "icon": [
+                      {
+                        "width": "calc(34px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "color": "#8fdbed"
+                      }
+                    ],
+                    "name": [
+                      {
+                        "font-size": "calc(15px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "font-weight": 450
+                      },
+                      {
+                        "color": "#e2edf5"
+                      },
+                      {
+                        "white-space": "normal"
+                      }
+                    ]
+                  },
+                  "name": "Home",
+                  "icon": "mdi:home-outline",
+                  "tap_action": {
+                    "action": "navigate",
+                    "navigation_path": "/athena-home/home"
+                  }
+                },
+                {
+                  "type": "custom:button-card",
+                  "show_name": true,
+                  "show_icon": true,
+                  "hold_action": {
+                    "action": "none"
+                  },
+                  "double_tap_action": {
+                    "action": "none"
+                  },
+                  "styles": {
+                    "grid": [
+                      {
+                        "grid-template-areas": "\"i\" \"n\""
+                      },
+                      {
+                        "grid-template-columns": "1fr"
+                      },
+                      {
+                        "grid-template-rows": "1fr auto"
+                      },
+                      {
+                        "row-gap": "calc(7px * var(--va-clock-shortcut-scale, 1))"
+                      }
+                    ],
+                    "card": [
+                      {
+                        "background": "#bedef00d"
+                      },
+                      {
+                        "border": "1px solid #bedef035"
+                      },
+                      {
+                        "border-radius": "calc(22px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "padding": "calc(12px * var(--va-clock-shortcut-scale, 1)) calc(16px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "width": "calc(96px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "height": "calc(88px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "box-shadow": "none"
+                      },
+                      {
+                        "font-family": "Inter,Roboto,system-ui,sans-serif"
+                      }
+                    ],
+                    "icon": [
+                      {
+                        "width": "calc(34px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "color": "#8fdbed"
+                      }
+                    ],
+                    "name": [
+                      {
+                        "font-size": "calc(15px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "font-weight": 450
+                      },
+                      {
+                        "color": "#e2edf5"
+                      },
+                      {
+                        "white-space": "normal"
+                      }
+                    ]
+                  },
+                  "name": "TV",
+                  "icon": "mdi:television-classic",
+                  "tap_action": {
+                    "action": "navigate",
+                    "navigation_path": "/athena-tv/tv"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "custom:button-card",
+              "variables": {
+                "musiccardversion": "1.1.1",
+                "var_musicplayer_device": "[[[\n  var assistbid = localStorage.getItem(\"view_assist_sensor\");\n  var musicdevice = hass.states[assistbid].attributes.musicplayer_device;\n  return `${musicdevice}`\n]]]   "
+              },
+              "template": [
+                "variable_template",
+                "body_template"
+              ],
+              "styles": {
+                "card": [
+                  {
+                    "background-color": "black;"
+                  }
+                ],
+                "custom_fields": {
+                  "message": [
+                    {
+                      "font-size": "[[[ return variables.var_font_size ]]]"
+                    },
+                    {
+                      "align-self": "center"
+                    },
+                    {
+                      "justify-self": "center"
+                    },
+                    {
+                      "width": "100%"
+                    },
+                    {
+                      "height": "100%"
+                    },
+                    {
+                      "position": "absolute"
+                    },
+                    {
+                      "justify-content": "center"
+                    },
+                    {
+                      "text-align": "start"
+                    }
+                  ]
+                }
+              },
+              "custom_fields": {
+                "title": "[[[ return variables.var_current_time ]]]",
+                "message": {
+                  "card": {
+                    "type": "custom:mod-card",
+                    "card": {
+                      "type": "media-control",
+                      "name": " ",
+                      "entity": "[[[ return variables.var_musicplayer_device ]]]"
+                    },
+                    "style": "ha-card {\n  width: 100vw !important;\n  height: 100vh !important;\n  margin: 0 !important;\n  padding: 0 !important;\n  box-shadow: none !important;\n  --paper-card-background-color: transparent !important;\n  --mdc-icon-size: 0px;\n}\n"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Sports",
+      "path": "sports",
+      "type": "panel",
+      "cards": [
+        {
+          "type": "vertical-stack",
+          "cards": [
+            {
+              "type": "horizontal-stack",
+              "cards": [
+                {
+                  "type": "custom:button-card",
+                  "show_name": true,
+                  "show_icon": true,
+                  "hold_action": {
+                    "action": "none"
+                  },
+                  "double_tap_action": {
+                    "action": "none"
+                  },
+                  "styles": {
+                    "grid": [
+                      {
+                        "grid-template-areas": "\"i\" \"n\""
+                      },
+                      {
+                        "grid-template-columns": "1fr"
+                      },
+                      {
+                        "grid-template-rows": "1fr auto"
+                      },
+                      {
+                        "row-gap": "calc(7px * var(--va-clock-shortcut-scale, 1))"
+                      }
+                    ],
+                    "card": [
+                      {
+                        "background": "#bedef00d"
+                      },
+                      {
+                        "border": "1px solid #bedef035"
+                      },
+                      {
+                        "border-radius": "calc(22px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "padding": "calc(12px * var(--va-clock-shortcut-scale, 1)) calc(16px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "width": "calc(96px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "height": "calc(88px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "box-shadow": "none"
+                      },
+                      {
+                        "font-family": "Inter,Roboto,system-ui,sans-serif"
+                      }
+                    ],
+                    "icon": [
+                      {
+                        "width": "calc(34px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "color": "#8fdbed"
+                      }
+                    ],
+                    "name": [
+                      {
+                        "font-size": "calc(15px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "font-weight": 450
+                      },
+                      {
+                        "color": "#e2edf5"
+                      },
+                      {
+                        "white-space": "normal"
+                      }
+                    ]
+                  },
+                  "name": "Home",
+                  "icon": "mdi:home-outline",
+                  "tap_action": {
+                    "action": "navigate",
+                    "navigation_path": "/athena-home/home"
+                  }
+                },
+                {
+                  "type": "custom:button-card",
+                  "show_name": true,
+                  "show_icon": true,
+                  "hold_action": {
+                    "action": "none"
+                  },
+                  "double_tap_action": {
+                    "action": "none"
+                  },
+                  "styles": {
+                    "grid": [
+                      {
+                        "grid-template-areas": "\"i\" \"n\""
+                      },
+                      {
+                        "grid-template-columns": "1fr"
+                      },
+                      {
+                        "grid-template-rows": "1fr auto"
+                      },
+                      {
+                        "row-gap": "calc(7px * var(--va-clock-shortcut-scale, 1))"
+                      }
+                    ],
+                    "card": [
+                      {
+                        "background": "#bedef00d"
+                      },
+                      {
+                        "border": "1px solid #bedef035"
+                      },
+                      {
+                        "border-radius": "calc(22px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "padding": "calc(12px * var(--va-clock-shortcut-scale, 1)) calc(16px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "width": "calc(96px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "height": "calc(88px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "box-shadow": "none"
+                      },
+                      {
+                        "font-family": "Inter,Roboto,system-ui,sans-serif"
+                      }
+                    ],
+                    "icon": [
+                      {
+                        "width": "calc(34px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "color": "#8fdbed"
+                      }
+                    ],
+                    "name": [
+                      {
+                        "font-size": "calc(15px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "font-weight": 450
+                      },
+                      {
+                        "color": "#e2edf5"
+                      },
+                      {
+                        "white-space": "normal"
+                      }
+                    ]
+                  },
+                  "name": "TV",
+                  "icon": "mdi:television-classic",
+                  "tap_action": {
+                    "action": "navigate",
+                    "navigation_path": "/athena-tv/tv"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "custom:button-card",
+              "variables": {
+                "sportsversion": "1.1.0",
+                "var_teamtracker_device": "[[[ try {return hass.states[variables.var_assistsat_entity].attributes.team_tracker} catch { return  \"sensor.team_tracker\"}]]]"
+              },
+              "template": [
+                "variable_template",
+                "body_template"
+              ],
+              "styles": {
+                "card": [
+                  {
+                    "background-color": "#1c1c1c"
+                  },
+                  {
+                    "background-size": "cover"
+                  }
+                ],
+                "custom_fields": {
+                  "message": [
+                    {
+                      "font-size": "[[[ return variables.var_font_size ]]]"
+                    },
+                    {
+                      "align-self": "center"
+                    },
+                    {
+                      "justify-self": "center"
+                    },
+                    {
+                      "width": "100%"
+                    },
+                    {
+                      "position": "absolute"
+                    },
+                    {
+                      "justify-content": "center"
+                    },
+                    {
+                      "text-align": "start"
+                    }
+                  ]
+                }
+              },
+              "custom_fields": {
+                "title": "",
+                "message": {
+                  "card": {
+                    "type": "custom:teamtracker-card",
+                    "entity": "[[[ return variables.var_teamtracker_device ]]]"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Thermostat",
+      "path": "thermostat",
+      "type": "panel",
+      "cards": [
+        {
+          "type": "vertical-stack",
+          "cards": [
+            {
+              "type": "horizontal-stack",
+              "cards": [
+                {
+                  "type": "custom:button-card",
+                  "show_name": true,
+                  "show_icon": true,
+                  "hold_action": {
+                    "action": "none"
+                  },
+                  "double_tap_action": {
+                    "action": "none"
+                  },
+                  "styles": {
+                    "grid": [
+                      {
+                        "grid-template-areas": "\"i\" \"n\""
+                      },
+                      {
+                        "grid-template-columns": "1fr"
+                      },
+                      {
+                        "grid-template-rows": "1fr auto"
+                      },
+                      {
+                        "row-gap": "calc(7px * var(--va-clock-shortcut-scale, 1))"
+                      }
+                    ],
+                    "card": [
+                      {
+                        "background": "#bedef00d"
+                      },
+                      {
+                        "border": "1px solid #bedef035"
+                      },
+                      {
+                        "border-radius": "calc(22px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "padding": "calc(12px * var(--va-clock-shortcut-scale, 1)) calc(16px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "width": "calc(96px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "height": "calc(88px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "box-shadow": "none"
+                      },
+                      {
+                        "font-family": "Inter,Roboto,system-ui,sans-serif"
+                      }
+                    ],
+                    "icon": [
+                      {
+                        "width": "calc(34px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "color": "#8fdbed"
+                      }
+                    ],
+                    "name": [
+                      {
+                        "font-size": "calc(15px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "font-weight": 450
+                      },
+                      {
+                        "color": "#e2edf5"
+                      },
+                      {
+                        "white-space": "normal"
+                      }
+                    ]
+                  },
+                  "name": "Home",
+                  "icon": "mdi:home-outline",
+                  "tap_action": {
+                    "action": "navigate",
+                    "navigation_path": "/athena-home/home"
+                  }
+                },
+                {
+                  "type": "custom:button-card",
+                  "show_name": true,
+                  "show_icon": true,
+                  "hold_action": {
+                    "action": "none"
+                  },
+                  "double_tap_action": {
+                    "action": "none"
+                  },
+                  "styles": {
+                    "grid": [
+                      {
+                        "grid-template-areas": "\"i\" \"n\""
+                      },
+                      {
+                        "grid-template-columns": "1fr"
+                      },
+                      {
+                        "grid-template-rows": "1fr auto"
+                      },
+                      {
+                        "row-gap": "calc(7px * var(--va-clock-shortcut-scale, 1))"
+                      }
+                    ],
+                    "card": [
+                      {
+                        "background": "#bedef00d"
+                      },
+                      {
+                        "border": "1px solid #bedef035"
+                      },
+                      {
+                        "border-radius": "calc(22px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "padding": "calc(12px * var(--va-clock-shortcut-scale, 1)) calc(16px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "width": "calc(96px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "height": "calc(88px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "box-shadow": "none"
+                      },
+                      {
+                        "font-family": "Inter,Roboto,system-ui,sans-serif"
+                      }
+                    ],
+                    "icon": [
+                      {
+                        "width": "calc(34px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "color": "#8fdbed"
+                      }
+                    ],
+                    "name": [
+                      {
+                        "font-size": "calc(15px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "font-weight": 450
+                      },
+                      {
+                        "color": "#e2edf5"
+                      },
+                      {
+                        "white-space": "normal"
+                      }
+                    ]
+                  },
+                  "name": "TV",
+                  "icon": "mdi:television-classic",
+                  "tap_action": {
+                    "action": "navigate",
+                    "navigation_path": "/athena-tv/tv"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "custom:button-card",
+              "variables": {
+                "thermostatcardversion": "1.0.2",
+                "var_climate_device": "[[[ try {return hass.states[variables.var_assistsat_entity].attributes.climate} catch { return \"\"}]]]"
+              },
+              "template": [
+                "variable_template",
+                "body_template"
+              ],
+              "styles": {
+                "card": [
+                  {
+                    "background-color": "#1c1c1c"
+                  },
+                  {
+                    "background-size": "cover"
+                  }
+                ],
+                "custom_fields": {
+                  "message": [
+                    {
+                      "font-size": "[[[ return variables.var_font_size ]]]"
+                    },
+                    {
+                      "position": "absolute"
+                    },
+                    {
+                      "padding": "10px"
+                    },
+                    {
+                      "border-radius": "10px"
+                    },
+                    {
+                      "width": "95%"
+                    },
+                    {
+                      "text-align": "start"
+                    },
+                    {
+                      "text-wrap": "wrap"
+                    },
+                    {
+                      "justify-content": "center"
+                    },
+                    {
+                      "align-self": "center"
+                    },
+                    {
+                      "padding": "2%"
+                    }
+                  ]
+                }
+              },
+              "custom_fields": {
+                "title": "",
+                "message": {
+                  "card": {
+                    "type": "thermostat",
+                    "entity": "[[[ return variables.var_climate_device ]]]",
+                    "name": " ",
+                    "card_mod": {
+                      "style": {
+                        ".": ".content {\n  transform: scale(1.8);\n}\n",
+                        "ha-icon-button": {
+                          "$": {
+                            "mwc-icon-button": {
+                              "$": {
+                                "button": "mwc-ripple {\n  display: none;\n}\n"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Webpage",
+      "path": "webpage",
+      "type": "panel",
+      "cards": [
+        {
+          "type": "vertical-stack",
+          "cards": [
+            {
+              "type": "horizontal-stack",
+              "cards": [
+                {
+                  "type": "custom:button-card",
+                  "show_name": true,
+                  "show_icon": true,
+                  "hold_action": {
+                    "action": "none"
+                  },
+                  "double_tap_action": {
+                    "action": "none"
+                  },
+                  "styles": {
+                    "grid": [
+                      {
+                        "grid-template-areas": "\"i\" \"n\""
+                      },
+                      {
+                        "grid-template-columns": "1fr"
+                      },
+                      {
+                        "grid-template-rows": "1fr auto"
+                      },
+                      {
+                        "row-gap": "calc(7px * var(--va-clock-shortcut-scale, 1))"
+                      }
+                    ],
+                    "card": [
+                      {
+                        "background": "#bedef00d"
+                      },
+                      {
+                        "border": "1px solid #bedef035"
+                      },
+                      {
+                        "border-radius": "calc(22px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "padding": "calc(12px * var(--va-clock-shortcut-scale, 1)) calc(16px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "width": "calc(96px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "height": "calc(88px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "box-shadow": "none"
+                      },
+                      {
+                        "font-family": "Inter,Roboto,system-ui,sans-serif"
+                      }
+                    ],
+                    "icon": [
+                      {
+                        "width": "calc(34px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "color": "#8fdbed"
+                      }
+                    ],
+                    "name": [
+                      {
+                        "font-size": "calc(15px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "font-weight": 450
+                      },
+                      {
+                        "color": "#e2edf5"
+                      },
+                      {
+                        "white-space": "normal"
+                      }
+                    ]
+                  },
+                  "name": "Home",
+                  "icon": "mdi:home-outline",
+                  "tap_action": {
+                    "action": "navigate",
+                    "navigation_path": "/athena-home/home"
+                  }
+                },
+                {
+                  "type": "custom:button-card",
+                  "show_name": true,
+                  "show_icon": true,
+                  "hold_action": {
+                    "action": "none"
+                  },
+                  "double_tap_action": {
+                    "action": "none"
+                  },
+                  "styles": {
+                    "grid": [
+                      {
+                        "grid-template-areas": "\"i\" \"n\""
+                      },
+                      {
+                        "grid-template-columns": "1fr"
+                      },
+                      {
+                        "grid-template-rows": "1fr auto"
+                      },
+                      {
+                        "row-gap": "calc(7px * var(--va-clock-shortcut-scale, 1))"
+                      }
+                    ],
+                    "card": [
+                      {
+                        "background": "#bedef00d"
+                      },
+                      {
+                        "border": "1px solid #bedef035"
+                      },
+                      {
+                        "border-radius": "calc(22px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "padding": "calc(12px * var(--va-clock-shortcut-scale, 1)) calc(16px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "width": "calc(96px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "height": "calc(88px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "box-shadow": "none"
+                      },
+                      {
+                        "font-family": "Inter,Roboto,system-ui,sans-serif"
+                      }
+                    ],
+                    "icon": [
+                      {
+                        "width": "calc(34px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "color": "#8fdbed"
+                      }
+                    ],
+                    "name": [
+                      {
+                        "font-size": "calc(15px * var(--va-clock-shortcut-scale, 1))"
+                      },
+                      {
+                        "font-weight": 450
+                      },
+                      {
+                        "color": "#e2edf5"
+                      },
+                      {
+                        "white-space": "normal"
+                      }
+                    ]
+                  },
+                  "name": "TV",
+                  "icon": "mdi:television-classic",
+                  "tap_action": {
+                    "action": "navigate",
+                    "navigation_path": "/athena-tv/tv"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "custom:button-card",
+              "variables": {
+                "webpageversion": "1.1.1",
+                "var_url": "[[[ try {return hass.states[variables.var_assistsat_entity].attributes.url} catch { return \"https://www.home-assistant.io/\"}]]]"
+              },
+              "template": [
+                "variable_template",
+                "body_template"
+              ],
+              "styles": {
+                "card": [
+                  {
+                    "background-color": "#00000"
+                  },
+                  {
+                    "border-width": "0px"
+                  },
+                  {
+                    "border-radius": "0px"
+                  }
+                ],
+                "custom_fields": {
+                  "message": [
+                    {
+                      "font-size": "[[[ return variables.var_font_size ]]]"
+                    },
+                    {
+                      "align-self": "center"
+                    },
+                    {
+                      "justify-self": "center"
+                    },
+                    {
+                      "height": "100%"
+                    },
+                    {
+                      "width": "100%"
+                    },
+                    {
+                      "position": "absolute"
+                    },
+                    {
+                      "justify-content": "center"
+                    },
+                    {
+                      "text-align": "start"
+                    }
+                  ]
+                }
+              },
+              "custom_fields": {
+                "message": {
+                  "card": {
+                    "type": "iframe",
+                    "url": "[[[ return variables.var_url ]]]",
+                    "aspect_ratio": "50%"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -12,6 +12,14 @@ internal object StreamingPlayerPolicy {
     private const val silk = "com.amazon.cloud9/com.amazon.slate.echo.SlateEchoActivity"
     private const val itvxLive = "air.ITVMobilePlayer/com.candyspace.itvplayer.ui.main.MainActivity"
 
+    fun outsideVision(windowStatus: String): Boolean {
+        val focused = windows.findAll(windowStatus).firstOrNull {
+            it.groupValues[2].contains("hasFocus=true,") && it.groupValues[2].contains("visible=true,")
+        } ?: return false
+        val component = focused.groupValues[1]
+        return component.contains('/') && component.substringBefore('/') != "com.mph1970.vacavision"
+    }
+
     fun focusedPlayer(windowStatus: String, width: Int = 1280, height: Int = 800): String? {
         val match = windows.findAll(windowStatus).firstOrNull {
             it.groupValues[2].contains("hasFocus=true,") && it.groupValues[2].contains("visible=true,")

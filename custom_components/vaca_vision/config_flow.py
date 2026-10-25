@@ -469,6 +469,16 @@ class VisionConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         from .setup_helpers import setup_defaults
         # Discovery may precede the Linux installer handoff; refresh on submit.
         defaults = await setup_defaults(self.hass, self._device["id"])
+        if self._device["port"] == 26900 and self._existing_entry is None:
+            info = await probe(self._device["host"], self._device["port"])
+            if info.id != self._device["id"]:
+                return self.async_abort(reason="device_changed")
+            raw_plan = info.capabilities.get("es8_install")
+            if raw_plan is not None:
+                from .es8_setup import validate_plan
+                plan = validate_plan(raw_plan)
+                defaults = {"name": plan["name"], "sendspin_client_id": plan["sendspin_client_id"],
+                            "setup_plan": plan, "dashboard": "/lovelace/0"}
         if self._existing_entry is None:
             self._device.update(defaults)
             if self._device["port"] == 26900 and ROLE_UPSTREAM in self._device["roles"]:
@@ -521,6 +531,7 @@ class VisionConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     self._existing_entry.entry_id if self._existing_entry else None,
                     expose_music=True)
             except InvalidEncryptionKeyAPIError:
+                values.pop("eda_noise_psk", None)
                 needs_key = self._needs_key = True
                 errors["base"] = "eda_key_required"
             except ValueError as ex:
@@ -539,7 +550,7 @@ class VisionConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             else:
                 errors["base"] = "ma_pair_first"
         if needs_key:
-            schema[vol.Required("eda_noise_psk")] = selector.TextSelector(selector.TextSelectorConfig(type=selector.TextSelectorType.PASSWORD))
+            schema[vol.Optional("eda_noise_psk")] = selector.TextSelector(selector.TextSelectorConfig(type=selector.TextSelectorType.PASSWORD))
         return self.async_show_form(step_id="upstream_auto", errors=errors, data_schema=vol.Schema(schema),
             description_placeholders={"settings_url": f'http://{values["host"]}:28931/'})
 

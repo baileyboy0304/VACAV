@@ -19,8 +19,14 @@ internal class StreamingPlayerProbe(private val context: Context) {
     private val busy = AtomicBoolean(false)
     private var closed = false
 
-    fun check(result: (Boolean) -> Unit) {
-        if (closed || !busy.compareAndSet(false, true)) return
+    private var pendingCheck: (() -> Unit)? = null
+
+    fun check(allowNonPlayback: Boolean = false, result: (Boolean) -> Unit) {
+        if (closed) return
+        if (!busy.compareAndSet(false, true)) {
+            pendingCheck = { check(allowNonPlayback, result) }
+            return
+        }
         worker.execute {
             val eligible = runCatching {
                 val power = context.getSystemService(Context.POWER_SERVICE) as PowerManager
@@ -34,7 +40,8 @@ internal class StreamingPlayerProbe(private val context: Context) {
                     val metrics = DisplayMetrics()
                     (context.getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay.getRealMetrics(metrics)
                     val player = StreamingPlayerPolicy.focusedPlayer(window, metrics.widthPixels, metrics.heightPixels)
-                    player != null && StreamingPlayerPolicy.eligible(window,
+                    if (allowNonPlayback) StreamingPlayerPolicy.outsideVision(window)
+                    else player != null && StreamingPlayerPolicy.eligible(window,
                         if (player == "com.amazon.cloud9") status("media_session") else "",
                         metrics.widthPixels, metrics.heightPixels)
                 }
@@ -42,6 +49,9 @@ internal class StreamingPlayerProbe(private val context: Context) {
             handler.post {
                 busy.set(false)
                 if (!closed) result(eligible)
+                val pending = pendingCheck
+                pendingCheck = null
+                if (!closed) pending?.invoke()
             }
         }
     }
@@ -70,6 +80,7 @@ internal class StreamingPlayerProbe(private val context: Context) {
 
     fun close() {
         closed = true
+        pendingCheck = null
         worker.shutdownNow()
     }
 }

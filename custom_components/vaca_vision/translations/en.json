@@ -7,9 +7,9 @@
         "title": "Connect VACAVision",
         "description": "Connect a running VACAVision app. Echo Show installation is handled by the Linux installer.",
         "menu_options": {
-          "install_standard": "on an Android display",
-          "install_overlay": "in overlay mode on a FireTV",
-          "install_dot": "on an Android display, with a paired echo-dot-assist",
+          "install_standard": "On an Android display",
+          "install_overlay": "In overlay mode on a FireTV",
+          "install_dot": "On an Android display, with paired Echo Dot Assist",
           "discover": "Find a running instance",
           "manual": "Connect an installed device by IP address"
         }
@@ -163,7 +163,7 @@
       "ma_unavailable": "Music Assistant must be loaded.",
       "ma_player_missing": "The Sendspin player ID was not found.",
       "ma_player_not_exposed": "Enable Expose to Home Assistant for this player in Music Assistant first. Use the Music Assistant entity as the View Assist music player.",
-      "eda_key_required": "EDA already has an encryption key or refused provisioning. Supply its existing ESPHome encryption key; do not reset it.",
+      "eda_key_required": "Echo Dot Assist did not accept the saved key or initial provisioning. For an already secured device, enter its existing API encryption key. After a reset, leave this blank and retry automatic adoption.",
       "ma_pair_first": "No available physical Sendspin player found. Pair the Echo in Music Assistant, then select Submit to check again."
     },
     "abort": {

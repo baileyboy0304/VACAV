@@ -1,0 +1,570 @@
+{
+  "title": "TV",
+  "views": [
+    {
+      "title": "TV",
+      "path": "tv",
+      "type": "panel",
+      "background": "radial-gradient(ellipse at 4% 5%, #1d3d59 0, transparent 55%), linear-gradient(120deg, #132b40, #101e30 72%)",
+      "cards": [
+        {
+          "type": "custom:button-card",
+          "show_name": false,
+          "show_icon": false,
+          "tap_action": {
+            "action": "none"
+          },
+          "styles": {
+            "card": [
+              {
+                "background": "radial-gradient(ellipse at 4% 5%, #1d3d59 0, transparent 55%), linear-gradient(120deg, #132b40, #101e30 72%)"
+              },
+              {
+                "border": "none"
+              },
+              {
+                "border-radius": "0"
+              },
+              {
+                "min-height": "100vh"
+              },
+              {
+                "padding": "28px"
+              },
+              {
+                "box-sizing": "border-box"
+              },
+              {
+                "--va-clock-shortcut-scale": "1"
+              }
+            ],
+            "grid": [
+              {
+                "grid-template-areas": "\"content\""
+              },
+              {
+                "grid-template-columns": "1fr"
+              },
+              {
+                "align-items": "start"
+              },
+              {
+                "align-content": "start"
+              },
+              {
+                "height": "100%"
+              },
+              {
+                "grid-template-rows": "min-content"
+              }
+            ],
+            "custom_fields": {
+              "content": [
+                {
+                  "position": "absolute"
+                },
+                {
+                  "top": "28px"
+                },
+                {
+                  "left": "28px"
+                }
+              ]
+            }
+          },
+          "custom_fields": {
+            "content": {
+              "card": {
+                "type": "grid",
+                "columns": 5,
+                "square": false,
+                "cards": [
+                  {
+                    "type": "custom:button-card",
+                    "show_name": true,
+                    "show_icon": true,
+                    "hold_action": {
+                      "action": "none"
+                    },
+                    "double_tap_action": {
+                      "action": "none"
+                    },
+                    "styles": {
+                      "grid": [
+                        {
+                          "grid-template-areas": "\"i\" \"n\""
+                        },
+                        {
+                          "grid-template-columns": "1fr"
+                        },
+                        {
+                          "grid-template-rows": "1fr auto"
+                        },
+                        {
+                          "row-gap": "calc(7px * var(--va-clock-shortcut-scale, 1))"
+                        },
+                        {
+                          "grid-template-rows": "calc(34px * var(--va-clock-shortcut-scale, 1)) auto"
+                        }
+                      ],
+                      "card": [
+                        {
+                          "background": "#bedef00d"
+                        },
+                        {
+                          "border": "1px solid #bedef035"
+                        },
+                        {
+                          "border-radius": "calc(22px * var(--va-clock-shortcut-scale, 1))"
+                        },
+                        {
+                          "padding": "calc(12px * var(--va-clock-shortcut-scale, 1)) calc(16px * var(--va-clock-shortcut-scale, 1))"
+                        },
+                        {
+                          "width": "calc(96px * var(--va-clock-shortcut-scale, 1))"
+                        },
+                        {
+                          "height": "calc(88px * var(--va-clock-shortcut-scale, 1))"
+                        },
+                        {
+                          "box-shadow": "none"
+                        },
+                        {
+                          "font-family": "Inter,Roboto,system-ui,sans-serif"
+                        },
+                        {
+                          "width": "calc(140px * var(--va-clock-shortcut-scale, 1))"
+                        },
+                        {
+                          "height": "calc(110px * var(--va-clock-shortcut-scale, 1))"
+                        }
+                      ],
+                      "icon": [
+                        {
+                          "width": "calc(34px * var(--va-clock-shortcut-scale, 1))"
+                        },
+                        {
+                          "color": "#8fdbed"
+                        }
+                      ],
+                      "name": [
+                        {
+                          "font-size": "calc(15px * var(--va-clock-shortcut-scale, 1))"
+                        },
+                        {
+                          "font-weight": 450
+                        },
+                        {
+                          "color": "#e2edf5"
+                        },
+                        {
+                          "white-space": "normal"
+                        },
+                        {
+                          "text-overflow": "clip"
+                        },
+                        {
+                          "overflow": "visible"
+                        }
+                      ]
+                    },
+                    "name": "Home",
+                    "icon": "mdi:home-outline",
+                    "tap_action": {
+                      "action": "navigate",
+                      "navigation_path": "/athena-home/home"
+                    }
+                  },
+                  {
+                    "type": "custom:button-card",
+                    "show_name": true,
+                    "show_icon": true,
+                    "hold_action": {
+                      "action": "none"
+                    },
+                    "double_tap_action": {
+                      "action": "none"
+                    },
+                    "styles": {
+                      "grid": [
+                        {
+                          "grid-template-areas": "\"i\" \"n\""
+                        },
+                        {
+                          "grid-template-columns": "1fr"
+                        },
+                        {
+                          "grid-template-rows": "1fr auto"
+                        },
+                        {
+                          "row-gap": "calc(7px * var(--va-clock-shortcut-scale, 1))"
+                        },
+                        {
+                          "grid-template-rows": "calc(34px * var(--va-clock-shortcut-scale, 1)) auto"
+                        }
+                      ],
+                      "card": [
+                        {
+                          "background": "#bedef00d"
+                        },
+                        {
+                          "border": "1px solid #bedef035"
+                        },
+                        {
+                          "border-radius": "calc(22px * var(--va-clock-shortcut-scale, 1))"
+                        },
+                        {
+                          "padding": "calc(12px * var(--va-clock-shortcut-scale, 1)) calc(16px * var(--va-clock-shortcut-scale, 1))"
+                        },
+                        {
+                          "width": "calc(96px * var(--va-clock-shortcut-scale, 1))"
+                        },
+                        {
+                          "height": "calc(88px * var(--va-clock-shortcut-scale, 1))"
+                        },
+                        {
+                          "box-shadow": "none"
+                        },
+                        {
+                          "font-family": "Inter,Roboto,system-ui,sans-serif"
+                        },
+                        {
+                          "width": "calc(140px * var(--va-clock-shortcut-scale, 1))"
+                        },
+                        {
+                          "height": "calc(110px * var(--va-clock-shortcut-scale, 1))"
+                        }
+                      ],
+                      "icon": [
+                        {
+                          "width": "calc(34px * var(--va-clock-shortcut-scale, 1))"
+                        },
+                        {
+                          "color": "#8fdbed"
+                        }
+                      ],
+                      "name": [
+                        {
+                          "font-size": "calc(15px * var(--va-clock-shortcut-scale, 1))"
+                        },
+                        {
+                          "font-weight": 450
+                        },
+                        {
+                          "color": "#e2edf5"
+                        },
+                        {
+                          "white-space": "normal"
+                        },
+                        {
+                          "text-overflow": "clip"
+                        },
+                        {
+                          "overflow": "visible"
+                        }
+                      ]
+                    },
+                    "name": "Netflix",
+                    "icon": "mdi:netflix",
+                    "tap_action": {
+                      "action": "url",
+                      "url_path": "app://com.netflix.mediaclient.echo"
+                    }
+                  },
+                  {
+                    "type": "custom:button-card",
+                    "show_name": true,
+                    "show_icon": true,
+                    "hold_action": {
+                      "action": "none"
+                    },
+                    "double_tap_action": {
+                      "action": "none"
+                    },
+                    "styles": {
+                      "grid": [
+                        {
+                          "grid-template-areas": "\"i\" \"n\""
+                        },
+                        {
+                          "grid-template-columns": "1fr"
+                        },
+                        {
+                          "grid-template-rows": "1fr auto"
+                        },
+                        {
+                          "row-gap": "calc(7px * var(--va-clock-shortcut-scale, 1))"
+                        },
+                        {
+                          "grid-template-rows": "calc(34px * var(--va-clock-shortcut-scale, 1)) auto"
+                        }
+                      ],
+                      "card": [
+                        {
+                          "background": "#bedef00d"
+                        },
+                        {
+                          "border": "1px solid #bedef035"
+                        },
+                        {
+                          "border-radius": "calc(22px * var(--va-clock-shortcut-scale, 1))"
+                        },
+                        {
+                          "padding": "calc(12px * var(--va-clock-shortcut-scale, 1)) calc(16px * var(--va-clock-shortcut-scale, 1))"
+                        },
+                        {
+                          "width": "calc(96px * var(--va-clock-shortcut-scale, 1))"
+                        },
+                        {
+                          "height": "calc(88px * var(--va-clock-shortcut-scale, 1))"
+                        },
+                        {
+                          "box-shadow": "none"
+                        },
+                        {
+                          "font-family": "Inter,Roboto,system-ui,sans-serif"
+                        },
+                        {
+                          "width": "calc(140px * var(--va-clock-shortcut-scale, 1))"
+                        },
+                        {
+                          "height": "calc(110px * var(--va-clock-shortcut-scale, 1))"
+                        }
+                      ],
+                      "icon": [
+                        {
+                          "width": "calc(34px * var(--va-clock-shortcut-scale, 1))"
+                        },
+                        {
+                          "color": "#8fdbed"
+                        }
+                      ],
+                      "name": [
+                        {
+                          "font-size": "calc(15px * var(--va-clock-shortcut-scale, 1))"
+                        },
+                        {
+                          "font-weight": 450
+                        },
+                        {
+                          "color": "#e2edf5"
+                        },
+                        {
+                          "white-space": "normal"
+                        },
+                        {
+                          "text-overflow": "clip"
+                        },
+                        {
+                          "overflow": "visible"
+                        }
+                      ]
+                    },
+                    "name": "BBC iPlayer",
+                    "icon": "mdi:play-box-outline",
+                    "tap_action": {
+                      "action": "url",
+                      "url_path": "app://bbc.iplayer.android"
+                    }
+                  },
+                  {
+                    "type": "custom:button-card",
+                    "show_name": true,
+                    "show_icon": true,
+                    "hold_action": {
+                      "action": "none"
+                    },
+                    "double_tap_action": {
+                      "action": "none"
+                    },
+                    "styles": {
+                      "grid": [
+                        {
+                          "grid-template-areas": "\"i\" \"n\""
+                        },
+                        {
+                          "grid-template-columns": "1fr"
+                        },
+                        {
+                          "grid-template-rows": "1fr auto"
+                        },
+                        {
+                          "row-gap": "calc(7px * var(--va-clock-shortcut-scale, 1))"
+                        },
+                        {
+                          "grid-template-rows": "calc(34px * var(--va-clock-shortcut-scale, 1)) auto"
+                        }
+                      ],
+                      "card": [
+                        {
+                          "background": "#bedef00d"
+                        },
+                        {
+                          "border": "1px solid #bedef035"
+                        },
+                        {
+                          "border-radius": "calc(22px * var(--va-clock-shortcut-scale, 1))"
+                        },
+                        {
+                          "padding": "calc(12px * var(--va-clock-shortcut-scale, 1)) calc(16px * var(--va-clock-shortcut-scale, 1))"
+                        },
+                        {
+                          "width": "calc(96px * var(--va-clock-shortcut-scale, 1))"
+                        },
+                        {
+                          "height": "calc(88px * var(--va-clock-shortcut-scale, 1))"
+                        },
+                        {
+                          "box-shadow": "none"
+                        },
+                        {
+                          "font-family": "Inter,Roboto,system-ui,sans-serif"
+                        },
+                        {
+                          "width": "calc(140px * var(--va-clock-shortcut-scale, 1))"
+                        },
+                        {
+                          "height": "calc(110px * var(--va-clock-shortcut-scale, 1))"
+                        }
+                      ],
+                      "icon": [
+                        {
+                          "width": "calc(34px * var(--va-clock-shortcut-scale, 1))"
+                        },
+                        {
+                          "color": "#8fdbed"
+                        }
+                      ],
+                      "name": [
+                        {
+                          "font-size": "calc(15px * var(--va-clock-shortcut-scale, 1))"
+                        },
+                        {
+                          "font-weight": 450
+                        },
+                        {
+                          "color": "#e2edf5"
+                        },
+                        {
+                          "white-space": "normal"
+                        },
+                        {
+                          "text-overflow": "clip"
+                        },
+                        {
+                          "overflow": "visible"
+                        }
+                      ]
+                    },
+                    "name": "ITVX",
+                    "icon": "mdi:play-circle-outline",
+                    "tap_action": {
+                      "action": "url",
+                      "url_path": "app://air.ITVMobilePlayer"
+                    }
+                  },
+                  {
+                    "type": "custom:button-card",
+                    "show_name": true,
+                    "show_icon": true,
+                    "hold_action": {
+                      "action": "none"
+                    },
+                    "double_tap_action": {
+                      "action": "none"
+                    },
+                    "styles": {
+                      "grid": [
+                        {
+                          "grid-template-areas": "\"i\" \"n\""
+                        },
+                        {
+                          "grid-template-columns": "1fr"
+                        },
+                        {
+                          "grid-template-rows": "1fr auto"
+                        },
+                        {
+                          "row-gap": "calc(7px * var(--va-clock-shortcut-scale, 1))"
+                        },
+                        {
+                          "grid-template-rows": "calc(34px * var(--va-clock-shortcut-scale, 1)) auto"
+                        }
+                      ],
+                      "card": [
+                        {
+                          "background": "#bedef00d"
+                        },
+                        {
+                          "border": "1px solid #bedef035"
+                        },
+                        {
+                          "border-radius": "calc(22px * var(--va-clock-shortcut-scale, 1))"
+                        },
+                        {
+                          "padding": "calc(12px * var(--va-clock-shortcut-scale, 1)) calc(16px * var(--va-clock-shortcut-scale, 1))"
+                        },
+                        {
+                          "width": "calc(96px * var(--va-clock-shortcut-scale, 1))"
+                        },
+                        {
+                          "height": "calc(88px * var(--va-clock-shortcut-scale, 1))"
+                        },
+                        {
+                          "box-shadow": "none"
+                        },
+                        {
+                          "font-family": "Inter,Roboto,system-ui,sans-serif"
+                        },
+                        {
+                          "width": "calc(140px * var(--va-clock-shortcut-scale, 1))"
+                        },
+                        {
+                          "height": "calc(110px * var(--va-clock-shortcut-scale, 1))"
+                        }
+                      ],
+                      "icon": [
+                        {
+                          "width": "calc(34px * var(--va-clock-shortcut-scale, 1))"
+                        },
+                        {
+                          "color": "#8fdbed"
+                        }
+                      ],
+                      "name": [
+                        {
+                          "font-size": "calc(15px * var(--va-clock-shortcut-scale, 1))"
+                        },
+                        {
+                          "font-weight": 450
+                        },
+                        {
+                          "color": "#e2edf5"
+                        },
+                        {
+                          "white-space": "normal"
+                        },
+                        {
+                          "text-overflow": "clip"
+                        },
+                        {
+                          "overflow": "visible"
+                        }
+                      ]
+                    },
+                    "name": "Apple TV",
+                    "icon": "mdi:apple",
+                    "tap_action": {
+                      "action": "url",
+                      "url_path": "intent://tv.apple.com/gb#Intent;scheme=https;package=com.amazon.cloud9;component=com.amazon.cloud9/.browsing.BrowserActivity;B.fullscreen=true;launchFlags=0x10000000;end"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

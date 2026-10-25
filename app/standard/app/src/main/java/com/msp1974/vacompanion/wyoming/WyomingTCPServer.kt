@@ -2,6 +2,7 @@ package com.msp1974.vacompanion.wyoming
 
 import android.content.Context
 import android.os.Build
+import java.io.File
 import com.mph1970.vacavision.core.*
 import com.msp1974.vacompanion.device.DeviceManager
 import com.msp1974.vacompanion.device.WyomingServerStatus
@@ -44,7 +45,12 @@ abstract class WyomingTCPServer(private val context: Context, val deviceManager:
             val version = context.packageManager.getPackageInfo(context.packageName, 0).versionName ?: "0.1.0"
             server = VacaServer(
                 { VacaProtocol.info("VACA_Vision ${Build.MODEL}", config.uuid, version) },
-                { VacaProtocol.capabilities("${Build.MANUFACTURER} ${Build.MODEL}", Build.VERSION.SDK_INT, version, false) },
+                { VacaProtocol.capabilities("${Build.MANUFACTURER} ${Build.MODEL}", Build.VERSION.SDK_INT, version, false).apply {
+                    if (Build.DEVICE == "athena") runCatching {
+                        val file = File(context.filesDir, "es8-install.json")
+                        if (file.isFile && file.length() <= 8192) put("es8_install", JSONObject(file.readText()))
+                    }
+                } },
                 { settings, host -> events.trySend { applySettings(settings, host) } },
                 { action, payload -> events.trySend { action(action, payload) } },
                 { message -> events.trySend {
