@@ -22,9 +22,9 @@ For the Echo Show 8 Gen 2, follow the [ES8_Athena installer guide](https://githu
 
 If discovery does not appear, choose **Add integration → VACA_Vision → Connect an installed device by IP address** and enter the Echo's IP. The integration tries the Echo Show app port automatically. Custom ports are available through advanced options.
 
-The Linux installer passes the device name and startup dashboard to HA. Without that installer handoff, the display starts at `/lovelace/0`; change it through the integration's configuration options.
+The Linux installer passes the device name, startup dashboard and public Sendspin identity to HA. This also identifies MA universal players that do not report an IP or MAC address. Without that installer handoff, the display starts at `/lovelace/0`; change it through the integration's configuration options.
 
-If the integration cannot uniquely match a player by device IP or MAC address, it asks you to select a **named physical Sendspin player**. It never guesses from similar device names or selects a sync group. If none is available, pair the Echo in Music Assistant, then retry. No raw player ID is required.
+If the integration cannot uniquely match a player by its public Sendspin identity, device IP or MAC address, it asks you to select a **named physical Sendspin player**. It never guesses from similar device names or selects a sync group. If none is available, pair the Echo in Music Assistant, then retry. No raw player ID is required.
 
 Encryption is automatic for a new device, and a stored key is reused. Only a device already secured with an unknown key needs a key entered manually. Obtain that existing API encryption key from the Echo Dot Assist settings or your original setup records. HA stores adopted keys privately; include HA's configuration in your backups. Keys are not printed into installer logs.
 

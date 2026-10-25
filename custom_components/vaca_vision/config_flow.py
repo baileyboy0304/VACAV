@@ -2,6 +2,7 @@
 
 import asyncio
 import json
+import re
 import logging
 import threading
 
@@ -122,10 +123,16 @@ class VisionConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 info = await probe(host, port)
                 if ROLE_UPSTREAM not in info.capabilities["roles"]:
                     raise ValueError("Unsupported display")
-                await setup_defaults(self.hass, info.id, {"name": name, "dashboard": dashboard, "role": ROLE_UPSTREAM})
+                defaults = {"name": name, "dashboard": dashboard, "role": ROLE_UPSTREAM}
+                client_id = user_input.get("sendspin_client_id")
+                if client_id:
+                    if not isinstance(client_id, str) or not re.fullmatch(r"[A-Za-z0-9_-]{43}", client_id):
+                        raise ValueError("Invalid Sendspin client identity")
+                    defaults["sendspin_client_id"] = client_id
+                await setup_defaults(self.hass, info.id, defaults)
             except (KeyError, ValueError, vol.Invalid, OSError, TimeoutError):
                 return self.async_abort(reason="setup_prepare_failed")
-            return self.async_abort(reason="setup_prepared")
+            return self.async_abort(reason="setup_prepared", description_placeholders={"setup_protocol": "2"})
         return self.async_show_menu(
             step_id="user",
             menu_options=[
@@ -492,7 +499,7 @@ class VisionConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         values = self._device
         if user_input and user_input.get("eda_noise_psk"):
             values["eda_noise_psk"] = user_input["eda_noise_psk"]
-        choices, matches = await music_choices(self.hass, values["host"], values.get("eda_mac"))
+        choices, matches = await music_choices(self.hass, values["host"], values.get("eda_mac"), values.get("sendspin_client_id"))
         selection = (user_input or {}).get("music_player")
         if selection:
             if selection not in choices:
@@ -643,7 +650,7 @@ class VisionOptionsFlow(config_entries.OptionsFlow):
             values.update(user_input)
             if values.get("music_player"):
                 from .setup_helpers import music_choices
-                choices, _ = await music_choices(self.hass, values["host"], values.get("eda_mac"))
+                choices, _ = await music_choices(self.hass, values["host"], values.get("eda_mac"), values.get("sendspin_client_id"))
                 if values["music_player"] not in choices:
                     errors["base"] = "ma_player_missing"
                 else:
@@ -689,7 +696,7 @@ class VisionOptionsFlow(config_entries.OptionsFlow):
                 return self.async_create_entry(title="", data=values)
         if values.get("role") == ROLE_UPSTREAM:
             from .setup_helpers import music_choices
-            choices, _ = await music_choices(self.hass, values["host"], values.get("eda_mac"))
+            choices, _ = await music_choices(self.hass, values["host"], values.get("eda_mac"), values.get("sendspin_client_id"))
             schema = {
                 vol.Required("name", default=values["name"]): str,
                 vol.Optional("dashboard", default=values["dashboard"]): str,

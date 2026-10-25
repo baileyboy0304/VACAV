@@ -33,6 +33,17 @@ class Matching(unittest.TestCase):
             q=NS(**vars(p)); setattr(q,key,value)
             self.assertFalse(self.m.physical_sendspin(q,providers))
 
+    def test_universal_player_uses_direct_sendspin_protocol(self):
+        protocol=NS(protocol_domain='sendspin',available=True,derived_from=None,output_protocol_id='public-id')
+        p=NS(provider='universal_player',type='player',available=True,enabled=True,needs_setup=False,output_protocols=[protocol],player_id='universal-id',device_info=NS(ip_address=None,mac_address=None))
+        self.assertTrue(self.m.physical_sendspin(p,{}))
+        self.assertTrue(self.m.player_matches(p,'192.0.2.1',client_id='public-id'))
+        self.assertFalse(self.m.player_matches(p,'192.0.2.1',client_id='other-id'))
+        p.type='group'
+        self.assertFalse(self.m.physical_sendspin(p,{}))
+        p.type='player'; protocol.derived_from='airplay'
+        self.assertFalse(self.m.physical_sendspin(p,{}))
+
 class Flow(unittest.IsolatedAsyncioTestCase):
     def setUp(self):
         names=['homeassistant','homeassistant.config_entries','homeassistant.core',
@@ -131,3 +142,8 @@ class Flow(unittest.IsolatedAsyncioTestCase):
         result=await self.flow.async_step_confirm_es8({'name':'User name'})
         self.assertEqual(result['data']['dashboard'],'/later-home/home')
         self.assertEqual(result['data']['name'],'User name')
+
+    async def test_installer_public_identity_is_retained_for_matching(self):
+        r=await self.flow.async_step_user({'prepare_only':True,'host':'192.0.2.1','name':'Garden','dashboard':'/home/home','sendspin_client_id':'A'*43})
+        self.assertEqual(r['description_placeholders']['setup_protocol'],'2')
+        self.assertEqual(self.defaults.call_args.args[2]['sendspin_client_id'],'A'*43)

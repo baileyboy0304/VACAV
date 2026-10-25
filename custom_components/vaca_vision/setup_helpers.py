@@ -13,11 +13,19 @@ def address(value):
 def physical_sendspin(player, providers):
     provider = providers.get(player.provider)
     domain = getattr(provider, 'domain', player.provider)
-    return (domain == 'sendspin' and str(player.type) == 'player'
-            and player.available and getattr(player, 'enabled', True))
+    sendspin = domain == 'sendspin' or (domain == 'universal_player' and any(
+        protocol.protocol_domain == 'sendspin' and protocol.available
+        and not getattr(protocol, 'derived_from', None)
+        for protocol in getattr(player, 'output_protocols', ())))
+    return (sendspin and str(player.type) == 'player' and player.available
+            and getattr(player, 'enabled', True) and not getattr(player, 'needs_setup', False))
 
 
-def player_matches(player, host, mac=None):
+def player_matches(player, host, mac=None, client_id=None):
+    if client_id:
+        return player.player_id == client_id or any(
+            p.protocol_domain == 'sendspin' and p.output_protocol_id == client_id
+            for p in getattr(player, 'output_protocols', ()))
     info = player.device_info
     if mac and getattr(info, 'mac_address', None):
         normalize = lambda v: str(v).lower().replace(':', '').replace('-', '')
@@ -25,7 +33,7 @@ def player_matches(player, host, mac=None):
     return address(host) is not None and address(getattr(info, 'ip_address', None)) == address(host)
 
 
-async def music_choices(hass, host, mac=None):
+async def music_choices(hass, host, mac=None, client_id=None):
     from homeassistant.components.music_assistant.helpers import get_music_assistant_client
     from homeassistant.exceptions import HomeAssistantError
     choices, matches = {}, []
@@ -39,7 +47,7 @@ async def music_choices(hass, host, mac=None):
                 key = json.dumps([entry.entry_id, player.player_id], separators=(',', ':'))
                 ip = getattr(player.device_info, 'ip_address', None)
                 choices[key] = f'{player.name} ({ip or "address unavailable"}) — {entry.title}'
-                if player_matches(player, host, mac):
+                if player_matches(player, host, mac, client_id):
                     matches.append(key)
         except HomeAssistantError:
             continue
