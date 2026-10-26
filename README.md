@@ -168,6 +168,8 @@ Run setup-flow tests with `pip install -r requirements-dev.txt` followed by `pyt
 
 ## Floating streaming controls
 
-Double-tap the screen in a streaming app to open Home, Keep on and Brightness.
+**Double-tap the screen in a streaming app to open the popup**, then tap **Home**
+to return to your dashboard. The popup also provides **Keep on** and **Brightness**
+and works during playback and on sign-in/browsing screens.
 The popup hides after five seconds. Taps also reach the streaming app, so its
 player may respond to the gesture.
