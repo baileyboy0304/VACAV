@@ -67,7 +67,10 @@ pipeline. Then sign into HA on the Echo Show touchscreen.
 Open **Settings → Devices & services → View Assist → Add device**. Select
 **View Assist device with display**, then **Next**.
 
-<img src="docs/images/setup/12-va-device-type.png" alt="View Assist device type set to View Assist device with display" width="290">
+<img src="docs/images/setup/01-discovered-integration.png" alt="Integration page showing the Add device button at the top right" width="593">
+
+The image shows the **Add device** button on VACAVision’s page; for this step,
+open **View Assist** and use its **Add device** button.
 
 Use the name entered in the Linux installer to find this Echo’s entities. The
 following example uses **Garden Athena**; substitute your own device name.
@@ -90,32 +93,35 @@ Music Assistant may name the player after the hardware, such as **Echo Show 8 2n
 gen a57772**. Open its device under **Music Assistant** and check its address against
 the Echo’s address. Use that player in both player fields.
 
-<img src="docs/images/setup/13-va-device-fields.png" alt="View Assist form with Garden Athena's name and both Music Assistant player fields filled" width="290">
+<img src="docs/images/setup/13-va-device-fields.png" alt="Garden Athena Core Device Configuration showing its name, players, microphone and display" width="322">
 
-<img src="docs/images/setup/13b-va-display.png" alt="View Assist microphone and display fields for Garden Athena" width="290">
+The screenshot shows these fields under an existing device’s **Core Device
+Configuration**. Use the same selections when adding the device.
 
 Select **Submit**. Open the new View Assist device’s **Configure** menu:
 
 - Under **Default Options**, enable announcements and set ducking volume to **0**.
+- Enable **Auto music mode** so View Assist opens the music view when playback starts.
 - In the same **Default Options**, use your existing View Assist weather setting, such
   as `weather.home`, or select the weather entity for this display. View Assist
   applies its master settings when the device has no override.
 
-<img src="docs/images/setup/14-va-weather.png" alt="View Assist default settings showing the weather entity" width="290">
+<img src="docs/images/setup/14-va-weather.png" alt="Garden Athena Default Options showing weather, zero ducking and Auto music mode enabled" width="326">
 
 ## Install the example dashboards (optional)
 
 Open **Settings → Devices & services → VACAVision → your device → Configure →
 Install example dashboards**, then follow **Open the dashboard installer**.
 
-<img src="docs/images/setup/15-vacav-configure.png" alt="VACAVision Configure menu offering Device settings and Install example dashboards" width="290">
+<img src="docs/images/setup/15-vacav-configure.png" alt="VACAVision Configure menu offering Device settings and Install example dashboards" width="326">
 
-The installer reads the microphone, display, Music Assistant player and weather
-from your completed View Assist setup. It detects the Music Assistant page in HA.
+Install the dashboards after creating the View Assist device. They use its sensor
+entity and weather setting. The installer also checks its microphone, display and
+Music Assistant player mappings before preparing the dashboards. It detects the Music Assistant page in HA.
 If that page cannot be identified, open Music Assistant and copy the URL path after
 the host and port into the requested field.
 
-<img src="docs/images/setup/16-dashboard-review.png" alt="Dashboard installer showing Garden Athena's detected View Assist settings and dashboard destinations" width="400">
+<img src="docs/images/setup/16-dashboard-review.png" alt="Dashboard installer showing Garden Athena's detected View Assist settings and dashboard destinations" width="322">
 
 Select **Install example dashboards**, review the three destination names, then
 select **Back up and install**. Existing dashboard configurations are backed up in
