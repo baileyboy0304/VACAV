@@ -86,12 +86,6 @@ class UpstreamControls(
                         }
                     }
                     else if (controlsVisible) setControlsVisible(false)
-                    else playerProbe.check { eligible ->
-                        if (generation == touchGeneration && eligible) {
-                            manualControls = false
-                            setControlsVisible(true)
-                        }
-                    }
                     return true
                 }
                 if (event.actionMasked == MotionEvent.ACTION_DOWN) handler.removeCallbacks(hideControls)

@@ -165,3 +165,9 @@ The integration is in `custom_components/vaca_vision/`, including its installati
 This variant is based on [MSP1974's View Assist Companion App](https://github.com/msp1974/ViewAssistCompanionApp) and works with [Dinki's View Assist](https://github.com/dinki/View-Assist) ([documentation](https://dinki.github.io/View-Assist/)). Original authors do not maintain or endorse these variant-specific changes. See `LICENSE`, `NOTICE`, and the retained app/component licenses.
 
 Run setup-flow tests with `pip install -r requirements-dev.txt` followed by `python -m unittest discover -s tests -v`.
+
+## Floating streaming controls
+
+Double-tap the screen in a streaming app to open Home, Keep on and Brightness.
+The popup hides after five seconds. Taps also reach the streaming app, so its
+player may respond to the gesture.
