@@ -15,6 +15,10 @@ For the Echo Show 8 Gen 2, follow the [ES8_Athena installer guide](https://githu
 
 ## Connect an installed Echo Show
 
+Complete Music Assistant Sendspin pairing using the token on Echo Dot Assist’s
+done-screen before adding this Echo. Note its player name for the View Assist
+player selections below.
+
 **1. Add the discovered device.** Open **Settings → Devices & services**.
 Under **Discovered**, select **Add** on the **VACA_Vision** card.
 
@@ -67,10 +71,7 @@ pipeline. Then sign into HA on the Echo Show touchscreen.
 Open **Settings → Devices & services → View Assist → Add device**. Select
 **View Assist device with display**, then **Next**.
 
-<img src="docs/images/setup/01-discovered-integration.png" alt="Integration page showing the Add device button at the top right" width="593">
-
-The image shows the **Add device** button on VACAVision’s page; for this step,
-open **View Assist** and use its **Add device** button.
+<img src="docs/images/setup/12-va-device-type.png" alt="View Assist Add device form with View Assist device with display selected" width="290">
 
 Use the name entered in the Linux installer to find this Echo’s entities. The
 following example uses **Garden Athena**; substitute your own device name.
@@ -90,8 +91,8 @@ HA tab. Its entities include **Assist** and **View Assist display device**. Open
 display sensor and copy its value, then select that exact value in View Assist.
 
 Music Assistant may name the player after the hardware, such as **Echo Show 8 2nd
-gen a57772**. Open its device under **Music Assistant** and check its address against
-the Echo’s address. Use that player in both player fields.
+gen a57772**. Match it to the name shown on Echo Dot Assist’s done-screen.
+Use that Music Assistant player in both player fields.
 
 <img src="docs/images/setup/13-va-device-fields.png" alt="Garden Athena Core Device Configuration showing its name, players, microphone and display" width="322">
 
@@ -100,7 +101,9 @@ Configuration**. Use the same selections when adding the device.
 
 Select **Submit**. Open the new View Assist device’s **Configure** menu:
 
-- Under **Default Options**, enable announcements and set ducking volume to **0**.
+- Under **Default Options**, set **Disable announce on this device** to **On**.
+  Despite the label, **On** stores `use_announce: on` and enables announcements.
+- Set **Volume ducking percentage** to **0**.
 - Enable **Auto music mode** so View Assist opens the music view when playback starts.
 - In the same **Default Options**, use your existing View Assist weather setting, such
   as `weather.home`, or select the weather entity for this display. View Assist
