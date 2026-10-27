@@ -131,7 +131,11 @@ class PresetRepository(private val context: Context) {
             }
 
             else -> {
-                val resId = context.resources.getIdentifier(spec, "drawable", context.packageName)
+                // Preserve legacy icon names stored in picker profiles before the runtimes merged.
+                val overlayName = if (spec.startsWith("ov_")) spec else "ov_$spec"
+                val overlayId = context.resources.getIdentifier(overlayName, "drawable", context.packageName)
+                val resId = if (overlayId != 0) overlayId
+                    else context.resources.getIdentifier(spec, "drawable", context.packageName)
                 if (resId != 0) context.getDrawable(resId) ?: placeholder()
                 else placeholder()
             }

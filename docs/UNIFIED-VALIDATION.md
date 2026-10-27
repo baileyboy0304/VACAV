@@ -66,3 +66,19 @@ updated APK was installed in place on ES8 and Fire TV.
   with remote navigation to Weather.
 - User reported physical controls/audio “seems ok.”
 - APK SHA-256: `395d8fde134fcbb6d204ef6fde8d4022581b439ebd9cc9691bce4572bb54d7e5`.
+
+## Settings cog follow-up — 2026-10-27
+
+App `0.3.0-unified-preview.3` (22), integration `0.6.2`, resolves legacy picker
+resource names to the merged overlay drawables. This restores the Settings cog
+and saved local icon names. Corrected garbled punctuation in the settings labels.
+
+- 78 Android tests passed, including the actual Settings icon resource and saved
+  legacy/prefixed icons on Android API 25 and 28.
+- 32 integration/installer tests passed.
+- Visually verified the restored cog on Fire TV and selected it with the remote
+  navigation path; the expected picker settings screen opened.
+- Installed the same signed APK in place on Fire TV and ES8.
+- `VACA_Vision Remote` is the optional Bluetooth controller setup launcher in the
+  same APK; ordinary Fire TV remote navigation does not require it.
+- APK SHA-256: `c19cbab1a7c9e2918cdaaef166441425a8485b5cec67116c0922e089a1ad0442`.

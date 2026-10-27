@@ -33,7 +33,7 @@
     "adb-shell==0.4.4",
     "aioesphomeapi==46.2.0"
   ],
-  "version": "0.6.1",
+  "version": "0.6.2",
   "zeroconf": [
     "_vaca-vision._tcp.local."
   ],

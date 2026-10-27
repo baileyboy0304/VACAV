@@ -67,7 +67,7 @@ class SettingsActivity : RemoteActivity() {
             startActivity(Intent(this, PickerMenusActivity::class.java).putExtra("presets", true))
         }
         pickerStatus = text("", 16f)
-        button("Picker profiles â€” save / load") {
+        button("Picker profiles — save / load") {
             save(notifyService = false)
             startActivity(Intent(this, PickerProfilesActivity::class.java))
         }
@@ -75,7 +75,7 @@ class SettingsActivity : RemoteActivity() {
             clock = !clock; button.text = "Clock bubble: ${if (clock) "On" else "Off"}"
         }
         button("Device name: $playerName") { button -> edit("Device name", playerName) { value ->
-            if (value.isBlank() || value.length > 40) "Use 1â€“40 characters" else {
+            if (value.isBlank() || value.length > 40) "Use 1–40 characters" else {
                 playerName = value; button.text = "Device name: $value"; null
             }
         } }
@@ -136,8 +136,8 @@ class SettingsActivity : RemoteActivity() {
         }
         val request = HaPickerDiscovery()
         discovery = request
-        button.text = "Populating pickerâ€¦"
-        pickerStatus.text = "Reading /view-assistâ€¦"
+        button.text = "Populating picker…"
+        pickerStatus.text = "Reading /view-assist…"
         kotlin.concurrent.thread(name = "Picker-discovery") {
             val result = runCatching { request.fetch(source, access, refresh, clientId) }
             request.close()
@@ -153,7 +153,7 @@ class SettingsActivity : RemoteActivity() {
                     try {
                         val update = DevicePickerStore(this, source, device).refresh(views)
                         if (OverlayService.running) startService(Intent(this, OverlayService::class.java).setAction(OverlayService.PICKER_CHANGED))
-                        pickerStatus.text = "${update.total} views Â· ${update.added} added Â· ${update.removed} removed. Picker updated."
+                        pickerStatus.text = "${update.total} views · ${update.added} added · ${update.removed} removed. Picker updated."
                     } catch (_: Exception) {
                         pickerStatus.text = "Could not save the picker. Previous settings retained."
                     }
