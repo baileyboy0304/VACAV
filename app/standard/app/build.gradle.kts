@@ -27,12 +27,17 @@ android {
         applicationId = "com.mph1970.vacavision"
         minSdk = 25
         targetSdk = 36
-        versionName = "0.2.3-upstream-prototype.13"
-        versionCode = 19
+        versionName = "0.3.0-unified-preview.1"
+        versionCode = 20
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    buildFeatures { buildConfig = true }
+
     signingConfigs {
+        getByName("debug") {
+            System.getenv("VACAV_SIGNING_KEYSTORE")?.let { storeFile = file(it) }
+        }
         create("release") {
             storeFile = file(System.getenv("KEYSTORE_FILE") ?: "release.keystore")
             storePassword = System.getenv("KEYSTORE_PASSWORD")
@@ -77,13 +82,14 @@ android {
     }
     testOptions {
         unitTests.isReturnDefaultValues = true
+        unitTests.isIncludeAndroidResources = true
     }
 }
 
 androidComponents {
     onVariants { variant ->
         variant.outputs.forEach { output ->
-            val name = "VACA_Vision-standard-${variant.outputs.first().versionName.get()}-${variant.name}.apk"
+            val name = "VACAV-${variant.outputs.first().versionName.get()}-${variant.name}.apk"
             (output as? com.android.build.api.variant.impl.VariantOutputImpl)?.outputFileName?.set(name)
         }
     }
@@ -146,4 +152,25 @@ dependencies {
     implementation("org.java-websocket:Java-WebSocket:1.5.7")
     implementation("com.squareup.moshi:moshi-kotlin:1.15.1")
     ksp("com.squareup.moshi:moshi-kotlin-codegen:1.15.1")
+}
+
+// Original Fire TV overlay, compiled into the same package as the ES8 display.
+android {
+    sourceSets.getByName("main").kotlin.directories.add("../../overlay-runtime/src/main/java")
+    sourceSets.getByName("main").res.srcDir("../../overlay-runtime/src/main/res")
+    sourceSets.getByName("main").assets.srcDir("../../overlay-runtime/src/main/assets")
+}
+dependencies {
+    implementation("androidx.localbroadcastmanager:localbroadcastmanager:1.1.0")
+    implementation("androidx.media3:media3-exoplayer-hls:${libs.versions.media3Exoplayer.get()}")
+}
+
+dependencies {
+    testImplementation("org.robolectric:robolectric:4.14.1")
+    testImplementation("org.json:json:20240303")
+}
+
+// Robolectric 4.14 uses ASM that supports Java 21, not the IDE's Java 25 runtime.
+tasks.withType<Test>().configureEach {
+    javaLauncher.set(javaToolchains.launcherFor { languageVersion.set(JavaLanguageVersion.of(21)) })
 }

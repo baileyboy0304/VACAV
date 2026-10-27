@@ -102,7 +102,7 @@ def grant_overlay(host: str, port: int, key_path: str) -> None:
         # Permission can be granted before the app has ever been able to start
         # its TCP listener. Open its normal startup flow (including HA sign-in).
         result = device.shell(
-            f"am start -n {PACKAGE}/com.msp1974.vacompanion.MainActivity", timeout_s=15
+            f"am start -n {PACKAGE}/com.msp1974.vacompanion.MainActivity --es vacav_mode overlay", timeout_s=15
         )
         if re.search(r"(?im)^\s*(error|exception)", result):
             raise AdbSetupError("adb_launch_failed")

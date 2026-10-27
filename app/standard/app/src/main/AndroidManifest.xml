@@ -2,6 +2,34 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-feature android:name="android.hardware.wifi" android:required="false" />
+
+    <uses-feature android:name="android.hardware.bluetooth_le" android:required="false" />
+
+    <uses-feature android:name="android.software.leanback" android:required="false" />
+
+    <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
+
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" android:usesPermissionFlags="neverForLocation" />
+
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" android:maxSdkVersion="30" />
+
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30" />
+
+    <uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" />
+
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE" />
+
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+
+    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
+
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+
+    <permission android:name="com.mph1970.vacavision.permission.CONTROL_PICKER" android:protectionLevel="signature" />
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <!-- Optional, explicitly granted by ADB for streaming-only controls. -->
@@ -62,6 +90,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:largeHeap="true"
+        android:banner="@drawable/ov_tv_banner"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.App.Starting"
@@ -80,6 +109,7 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.HOME" />
             </intent-filter>
@@ -132,5 +162,49 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+        <!-- Fire TV runtime and picker are part of this same APK. -->
+        <activity android:name="com.mph1970.vacavision.overlayruntime.MainActivity" android:exported="true" android:launchMode="singleTask" android:theme="@style/ov_LauncherTheme">
+            </activity>
+
+        <activity android:name="com.mph1970.vacavision.overlayruntime.ble.BleConnectActivity" android:exported="false" android:theme="@style/ov_AppTheme" />
+
+        <activity android:name="com.mph1970.vacavision.overlayruntime.PickerControlActivity" android:exported="true" android:permission="com.mph1970.vacavision.permission.CONTROL_PICKER" android:theme="@style/ov_LauncherTheme" android:excludeFromRecents="true" android:taskAffinity="" />
+
+        <activity-alias android:name="com.mph1970.vacavision.overlayruntime.RemoteSetup" android:targetActivity="com.mph1970.vacavision.overlayruntime.ble.BleConnectActivity" android:exported="true" android:label="VACA_Vision Remote">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity android:name="com.mph1970.vacavision.overlayruntime.DashboardLoginActivity" android:exported="false" android:theme="@style/ov_AppTheme" />
+
+        <activity android:name="com.mph1970.vacavision.overlayruntime.SettingsActivity" android:exported="false" android:theme="@style/ov_AppTheme" />
+
+        <activity android:name="com.mph1970.vacavision.overlayruntime.PickerMenusActivity" android:exported="false" android:theme="@style/ov_AppTheme" />
+
+        <activity android:name="com.mph1970.vacavision.overlayruntime.PickerProfilesActivity" android:exported="false" android:theme="@style/ov_AppTheme" />
+
+        <service android:name="com.mph1970.vacavision.overlayruntime.OverlayService" android:exported="false" android:foregroundServiceType="specialUse">
+            <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE" android:value="Persistent TV dashboard overlay and local Home Assistant device connection" />
+        </service>
+
+        <service android:name="com.mph1970.vacavision.overlayruntime.ble.BleRemoteService" android:exported="false" android:foregroundServiceType="connectedDevice" />
+
+        <service android:name="com.mph1970.vacavision.overlayruntime.HomeButtonService" android:exported="true" android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE" android:label="@string/ov_home_button_label">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <meta-data android:name="android.accessibilityservice" android:resource="@xml/ov_home_button_service" />
+        </service>
+
+        <activity-alias android:name=".VisionPicker" android:targetActivity="com.mph1970.vacavision.overlayruntime.PickerControlActivity" android:exported="true" android:label="VACA_Vision Picker" android:permission="">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
     </application>
 </manifest>

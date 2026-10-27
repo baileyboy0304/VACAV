@@ -1,0 +1,4 @@
+<resources>
+    <string name="ov_home_button_label">VACA_Vision Home button</string>
+    <string name="ov_home_button_description">Dismiss VACA_Vision dashboards and the picker when Home is pressed. Keys still reach Fire TV. This service does not read screen content or record keys.</string>
+</resources>

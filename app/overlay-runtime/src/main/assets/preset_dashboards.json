@@ -1,0 +1,7 @@
+[
+  {"id":"weather","title":"Weather","path":"/view-assist/weather","icon":"ic_dashboard_weather"},
+  {"id":"music","title":"Music","path":"/view-assist/music","icon":"ic_dashboard_music"},
+  {"id":"thermostat","title":"Climate","path":"/view-assist/thermostat","icon":"ic_dashboard_thermostat"},
+  {"id":"locate","title":"Locate","path":"/view-assist/locate","icon":"ic_dashboard_locate"}
+]
+

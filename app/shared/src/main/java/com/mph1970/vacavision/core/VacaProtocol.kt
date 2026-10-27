@@ -23,6 +23,8 @@ object VacaProtocol {
         put("device_signature", model); put("app_version", release)
         put("sdk_version", sdk); put("release", release); put("webview_version", "system")
         put("sensors", JSONArray().put("current_path"))
+        put("unified_apk", true); put("device_mode", if (overlayBuild) "overlay" else "standard")
+        put("supported_modes", JSONArray(listOf("standard", "overlay")))
         put("overlay", overlayBuild); put("display_only", true)
         put("sendspin", false); put("dot_playback", true); put("native_audio", false); put("crown_status", !overlayBuild)
         put("alarm_popup", overlayBuild); put("picker_profiles", if (overlayBuild) 1 else 0)

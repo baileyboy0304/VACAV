@@ -2,6 +2,46 @@
 
 VACAVision connects an Android display to Home Assistant and View Assist. On an Echo Show 8 Gen 2, Echo Dot Assist supplies Amazon wake-word detection, audio processing, Assist audio and Sendspin playback; VACAVision supplies the display companion and HA integration.
 
+## One APK for every display mode
+
+Version `0.3.0-unified-preview.1` (20), bundled with integration `0.6.0`, includes
+both the ES8/standard display and the original Fire TV overlay implementation.
+Install `custom_components/vaca_vision/packages/vacav.apk` on either device.
+The picker and remote setup launchers are included; no second picker APK is needed.
+
+The Home Assistant installer and Windows installer select `overlay` for Fire TV,
+including Fire TV paired with an Echo Dot. The ES8 installer selects `standard`.
+On an unconfigured install, Amazon AFT models default to overlay; other devices
+default to standard. The choice persists across restarts. The active mode advertises
+its compatible roles to HA, and only that mode's display/connection service runs.
+
+For manual installation, grant the device's existing permissions and select its mode:
+
+```sh
+adb -s DEVICE install -r custom_components/vaca_vision/packages/vacav.apk
+adb -s DEVICE shell am start -n com.mph1970.vacavision/com.msp1974.vacompanion.MainActivity --es vacav_mode standard
+# Use --es vacav_mode overlay on Fire TV.
+```
+
+Windows: `tools/setup-device.ps1 -Platform overlay -Serial 192.168.1.169:5555 -ApkPath custom_components/vaca_vision/packages/vacav.apk`.
+The same script accepts `-Platform standard`. Installers never uninstall an app
+on a signature mismatch. Older Fire TV installations need an explicitly chosen
+migration; retain their configuration privately before uninstalling.
+
+The ES8's native Echo Dot Assist audio ownership, dashboard, streaming controls,
+and double-tap Home popup are retained. Fire TV retains transparent dashboards,
+picker profiles, remote controls, alarm popups, paired-Echo replies and Sendspin.
+
+Build from `app/standard` with the Gradle wrapper. Set `VACAV_SIGNING_KEYSTORE`
+to the private external Linux debug keystore before building an update. Neither
+the key nor device backups belong in this repository. Tests use a Java 21 toolchain:
+
+```sh
+./gradlew :app:assembleDebug :app:testDebugUnitTest --no-watch-fs
+```
+
+See [unified-mode validation](docs/UNIFIED-VALIDATION.md) for the tested behaviors.
+
 ## Install the Home Assistant integration with HACS
 
 View Assist and Music Assistant, including its official Home Assistant integration, must already be operational for the Echo Show setup.
@@ -152,7 +192,7 @@ Test voice and music on the Echo, then sign into your streaming services.
 
 ## Updating older Android builds
 
-The prototype.12 APK uses the Linux build’s signing certificate. The previously
+Prototype.12, prototype.13, and the unified APK use the same Linux signing certificate. The previously
 bundled prototype.10 APK used a different certificate. Android cannot install this
 APK over that build; the installer stops rather than deleting app data. An upgrade
 needs the previous signing key or an explicitly chosen reinstall and HA browser

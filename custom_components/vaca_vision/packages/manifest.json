@@ -1,26 +1,14 @@
 {
-  "standard": {
-    "file": "vision-standard.apk",
-    "sha256": "4a3f303891ab9d77fe2832864aa8020f9d1dd812d7d283b43e083935825e53e4",
-    "version": "0.2.3-upstream-prototype.13",
-    "version_code": 19,
+  "unified": {
+    "file": "vacav.apk",
+    "sha256": "974d403b0a462c2688936ea911fc98c7274ecab66ec4badf2096ee37f73c2e7e",
+    "version": "0.3.0-unified-preview.1",
+    "version_code": 20,
     "package": "com.mph1970.vacavision",
-    "min_sdk": 25
-  },
-  "overlay": {
-    "file": "vision-overlay.apk",
-    "sha256": "74abdf894b578e46aa30d0a855af9e481bfe32ac9d6c3a2e6ebdde5df9400552",
-    "version": "0.2.3-mute-preview.1",
-    "version_code": 6,
-    "package": "com.mph1970.vacavision",
-    "min_sdk": 25
-  },
-  "picker": {
-    "file": "vision-picker.apk",
-    "sha256": "8e28ccb4334995b385c9f4a65a841a555455f039bc4d82ead76dd0b47e7e0ddc",
-    "version": "0.1.0",
-    "version_code": 1,
-    "package": "com.mph1970.vacavision.pickercontrol",
-    "min_sdk": 25
+    "min_sdk": 25,
+    "modes": [
+      "standard",
+      "overlay"
+    ]
   }
 }

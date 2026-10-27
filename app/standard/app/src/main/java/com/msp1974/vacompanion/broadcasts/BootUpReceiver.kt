@@ -11,6 +11,10 @@ import timber.log.Timber
 class BootUpReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
+        if (com.msp1974.vacompanion.DeviceMode.isOverlay(context)) {
+            com.mph1970.vacavision.overlayruntime.BootReceiver().onReceive(context, intent)
+            return
+        }
         if (Intent.ACTION_BOOT_COMPLETED == intent.action) {
             Timber.d("Received boot completed intent")
             val sharedPreferences =

@@ -72,6 +72,10 @@ class VAForegroundService @Inject constructor() : LifecycleService() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
 
+        if (com.msp1974.vacompanion.DeviceMode.isOverlay(this)) {
+            stopSelf()
+            return START_NOT_STICKY
+        }
         var action = intent?.action ?: Actions.START.toString()
         Timber.v("onStartCommand action: $action")
         if (intent == null) {

@@ -120,6 +120,7 @@ class MainActivity : AppCompatActivity(), EventListener, ComponentCallbacks2 {
 
         val splashscreen = installSplashScreen()
         super.onCreate(savedInstanceState)
+        if (DeviceMode.route(this, intent)) return
         StreamingHomeReturn.onHomeIntent(this, intent)
 
         screen = ScreenUtils(this, config)
@@ -468,11 +469,13 @@ class MainActivity : AppCompatActivity(), EventListener, ComponentCallbacks2 {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
+        if (DeviceMode.route(this, intent)) return
         StreamingHomeReturn.onHomeIntent(this, intent)
     }
 
     override fun onResume() {
         super.onResume()
+        if (DeviceMode.isOverlay(this)) return
         StreamingHomeReturn.clear(this)
         Timber.d("Main Activity resumed")
 
@@ -507,6 +510,7 @@ class MainActivity : AppCompatActivity(), EventListener, ComponentCallbacks2 {
 
     override fun onDestroy() {
         Timber.d("Main Activity destroyed")
+        if (!::screen.isInitialized) { super.onDestroy(); return }
         try {
             screen.setScreenTimeout(config.screenTimeout)
             config.eventBroadcaster.removeListener(this)

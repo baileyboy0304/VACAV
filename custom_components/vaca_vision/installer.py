@@ -98,7 +98,7 @@ def validate_target(target, kind):
 
 
 def package_kind(target, kind):
-    """A Fire TV paired with a Dot keeps its overlay build and permissions."""
+    """A Fire TV paired with a Dot selects the overlay runtime and permissions."""
     return "overlay" if target.profile == "fire_tv" and kind == "dot" else kind
 
 
@@ -106,7 +106,7 @@ def verify_packages(kind, directory=PACKAGES):
     """Check all bundled payloads before opening a write session."""
     try:
         manifest = json.loads((directory / "manifest.json").read_text(encoding="utf-8"))
-        names = ("overlay", "picker") if kind == "overlay" else ("standard",)
+        names = ("unified",)
         payloads = []
         for name in names:
             meta = manifest[name]
@@ -315,4 +315,5 @@ def install_target(host, port, key_path, kind, expected, cancelled: threading.Ev
             if locked:
                 shell_checked(device, f"rm -f {CROWN}/policy-update.lock")
         checkpoint()
-        shell_checked(device, f"am start -n {ACTIVITY}", "adb_launch_failed")
+        mode = "overlay" if build == "overlay" else "standard"
+        shell_checked(device, f"am start -n {ACTIVITY} --es vacav_mode {mode}", "adb_launch_failed")
