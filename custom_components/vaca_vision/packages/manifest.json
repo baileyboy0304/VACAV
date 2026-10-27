@@ -1,9 +1,9 @@
 {
   "unified": {
     "file": "vacav.apk",
-    "sha256": "974d403b0a462c2688936ea911fc98c7274ecab66ec4badf2096ee37f73c2e7e",
-    "version": "0.3.0-unified-preview.1",
-    "version_code": 20,
+    "sha256": "395d8fde134fcbb6d204ef6fde8d4022581b439ebd9cc9691bce4572bb54d7e5",
+    "version": "0.3.0-unified-preview.2",
+    "version_code": 21,
     "package": "com.mph1970.vacavision",
     "min_sdk": 25,
     "modes": [

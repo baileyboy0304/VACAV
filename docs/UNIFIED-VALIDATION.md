@@ -52,3 +52,17 @@ The certificate matches the supplied prototype.13 APK. The keystore remains exte
 No private device backups, browser state, account credentials, screenshots or signing
 keys are included in this repository. Live compatibility used the already-running
 HA integration; publishing this release does not restart Home Assistant.
+
+## Picker shortcut follow-up — 2026-10-27
+
+App `0.3.0-unified-preview.2` (21), integration `0.6.1`, restores the original
+standalone picker icon and Fire TV banner on the built-in launcher alias. The same
+updated APK was installed in place on ES8 and Fire TV.
+
+- The 34 saved picker view records match the pre-migration backup byte for byte.
+- Removed the backed-up obsolete standalone picker helper from Fire TV.
+- Confirmed Sidekick now targets the built-in `com.msp1974.vacompanion.VisionPicker`
+  alias in `com.mph1970.vacavision`; launched it and visually verified the picker
+  with remote navigation to Weather.
+- User reported physical controls/audio “seems ok.”
+- APK SHA-256: `395d8fde134fcbb6d204ef6fde8d4022581b439ebd9cc9691bce4572bb54d7e5`.

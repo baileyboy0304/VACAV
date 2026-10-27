@@ -199,7 +199,7 @@
             <meta-data android:name="android.accessibilityservice" android:resource="@xml/ov_home_button_service" />
         </service>
 
-        <activity-alias android:name=".VisionPicker" android:targetActivity="com.mph1970.vacavision.overlayruntime.PickerControlActivity" android:exported="true" android:label="VACA_Vision Picker" android:permission="">
+        <activity-alias android:name=".VisionPicker" android:targetActivity="com.mph1970.vacavision.overlayruntime.PickerControlActivity" android:exported="true" android:label="VACA_Vision Picker" android:icon="@drawable/ov_picker_icon" android:banner="@drawable/ov_picker_banner" android:permission="">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

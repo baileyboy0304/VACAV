@@ -4,7 +4,7 @@ VACAVision connects an Android display to Home Assistant and View Assist. On an 
 
 ## One APK for every display mode
 
-Version `0.3.0-unified-preview.1` (20), bundled with integration `0.6.0`, includes
+Version `0.3.0-unified-preview.2` (21), bundled with integration `0.6.1`, includes
 both the ES8/standard display and the original Fire TV overlay implementation.
 Install `custom_components/vaca_vision/packages/vacav.apk` on either device.
 The picker and remote setup launchers are included; no second picker APK is needed.
@@ -213,3 +213,5 @@ to return to your dashboard. The popup also provides **Keep on** and **Brightnes
 and works during playback and on sign-in/browsing screens.
 The popup hides after five seconds. Taps also reach the streaming app, so its
 player may respond to the gesture.
+
+The built-in **VACA_Vision Picker** launcher retains the original picker icon and TV banner. When migrating from the separate picker helper, select the built-in picker in Sidekick (or another shortcut app), then remove the obsolete `com.mph1970.vacavision.pickercontrol` helper. Picker menus, layouts and profiles remain in the main VACAV app.
